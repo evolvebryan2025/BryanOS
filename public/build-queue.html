@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Queue System</title>
+  <link rel="stylesheet" href="/css/build-queue.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🏗️ Build Queue System</h1>
+      <div class="header-actions">
+        <button id="refresh-btn" class="btn btn-secondary">🔄 Refresh</button>
+        <button id="add-manual-btn" class="btn btn-secondary">➕ Add Manual Task</button>
+      </div>
+    </header>
+
+    <!-- Process Transcript Section -->
+    <section class="process-section">
+      <h2>📝 Process Meeting Transcript</h2>
+      <div class="form-group">
+        <label for="client-select">Client:</label>
+        <select id="client-select" class="form-control">
+          <option value="">Select client...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="transcript-input">Meeting Transcript:</label>
+        <textarea
+          id="transcript-input"
+          class="form-control"
+          rows="8"
+          placeholder="Paste raw meeting transcript here..."
+        ></textarea>
+      </div>
+      <button id="process-btn" class="btn btn-primary">🤖 Process with AI</button>
+
+      <div id="ai-output" class="ai-output hidden">
+        <h3>AI Generated Task Document:</h3>
+        <pre id="formatted-output"></pre>
+
+        <h3>Parsed Tasks:</h3>
+        <div id="parsed-tasks-table"></div>
+
+        <div class="action-buttons">
+          <button id="confirm-tasks-btn" class="btn btn-success">✅ Confirm & Create Tasks</button>
+          <button id="retry-btn" class="btn btn-secondary">🔄 Edit & Retry</button>
+        </div>
+      </div>
+
+      <div id="processing-spinner" class="spinner hidden">
+        <div class="spinner-icon">⏳</div>
+        <p>Processing transcript with AI...</p>
+      </div>
+    </section>
+
+    <!-- Filters Section -->
+    <section class="filters-section">
+      <h2>🔍 Filters</h2>
+      <div class="filters">
+        <select id="filter-client" class="filter-control">
+          <option value="">All Clients</option>
+        </select>
+        <select id="filter-status" class="filter-control">
+          <option value="">All Statuses</option>
+          <option value="Not Started">Not Started</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Done">Done</option>
+          <option value="QA">QA</option>
+          <option value="Blocked">Blocked</option>
+        </select>
+        <select id="filter-assignee" class="filter-control">
+          <option value="">All Assignees</option>
+        </select>
+        <select id="filter-priority" class="filter-control">
+          <option value="">All Priorities</option>
+          <option value="Critical">Critical</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Tasks Table -->
+    <section class="tasks-section">
+      <h2>📋 Tasks</h2>
+      <div id="tasks-table-container">
+        <table id="tasks-table" class="tasks-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Task</th>
+              <th>Priority</th>
+              <th>Client</th>
+              <th>System</th>
+              <th>Status</th>
+              <th>Assigned To</th>
+              <th>Date Added</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tasks-tbody">
+            <!-- Tasks populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- Task Details Modal -->
+  <div id="task-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
+      <h2 id="modal-task-title"></h2>
+      <div id="modal-task-details"></div>
+      <div class="modal-actions">
+        <div class="form-group">
+          <label>Status:</label>
+          <select id="modal-status" class="form-control">
+            <option value="Not Started">Not Started</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Done">Done</option>
+            <option value="QA">QA</option>
+            <option value="Blocked">Blocked</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Reassign to:</label>
+          <select id="modal-assignee" class="form-control">
+            <!-- Populated by JS -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Add Notes:</label>
+          <textarea id="modal-notes" class="form-control" rows="3"></textarea>
+        </div>
+        <button id="modal-save-btn" class="btn btn-primary">💾 Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/build-queue.js"></script>
+</body>
+</html>
