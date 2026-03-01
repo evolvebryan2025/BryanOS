@@ -9,9 +9,14 @@
   "scripts": {
     "start": "node server.js",
     "dev": "NODE_ENV=development node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --verbose"
   },
-  "keywords": ["task-management", "ai", "google-sheets", "automation"],
+  "keywords": [
+    "task-management",
+    "ai",
+    "google-sheets",
+    "automation"
+  ],
   "author": "Bryan",
   "license": "ISC",
   "type": "commonjs",
@@ -20,7 +25,18 @@
     "axios": "^1.13.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
     "googleapis": "^171.4.0",
     "openai": "^6.25.0"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/antigravity-awesome-skills/",
+      "/bryan-finance-app/"
+    ]
+  },
+  "devDependencies": {
+    "jest": "^30.2.0"
   }
 }

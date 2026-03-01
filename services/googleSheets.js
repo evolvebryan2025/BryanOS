@@ -62,24 +62,78 @@ class GoogleSheetsService {
     }
   }
 
-  async getTaskById(taskId) {
-    const rows = await this.readSheet('Build Queue');
-    const taskRow = rows.find(row => row[0] === String(taskId));
-    if (!taskRow) return null;
+  async deleteRow(sheetName, rowIndex) {
+    try {
+      // Get sheet metadata to find the sheet ID
+      const sheetsMetadata = await this.sheets.spreadsheets.get({
+        spreadsheetId: this.spreadsheetId,
+      });
 
+      const sheet = sheetsMetadata.data.sheets.find(
+        s => s.properties.title === sheetName
+      );
+
+      if (!sheet) {
+        throw new Error(`Sheet ${sheetName} not found`);
+      }
+
+      const sheetId = sheet.properties.sheetId;
+
+      // Delete the row using batchUpdate
+      await this.sheets.spreadsheets.batchUpdate({
+        spreadsheetId: this.spreadsheetId,
+        requestBody: {
+          requests: [
+            {
+              deleteDimension: {
+                range: {
+                  sheetId: sheetId,
+                  dimension: 'ROWS',
+                  startIndex: rowIndex - 1, // 0-indexed
+                  endIndex: rowIndex, // exclusive
+                },
+              },
+            },
+          ],
+        },
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error(`Error deleting row ${rowIndex}:`, error.message);
+      throw new Error(`Failed to delete row ${rowIndex}`);
+    }
+  }
+
+  async findRowByTaskId(taskId) {
+    const rows = await this.readSheet('Build Queue');
+    for (let i = 1; i < rows.length; i++) {
+      if (rows[i][0] === String(taskId)) {
+        return { rowIndex: i + 1, data: rows[i] };
+      }
+    }
+    return null;
+  }
+
+  async getTaskById(taskId) {
+    const result = await this.findRowByTaskId(taskId);
+    if (!result) return null;
+
+    const row = result.data;
     return {
-      id: taskRow[0],
-      task: taskRow[1],
-      priority: taskRow[2],
-      client: taskRow[3],
-      system: taskRow[4],
-      status: taskRow[5],
-      assignedTo: taskRow[6],
-      dateAdded: taskRow[7],
-      dateCompleted: taskRow[8],
-      notes: taskRow[9],
-      timestamp: taskRow[10],
-      createdBy: taskRow[11],
+      id: row[0],
+      task: row[1],
+      priority: row[2],
+      client: row[3],
+      system: row[4],
+      status: row[5],
+      assignedTo: row[6],
+      dateAdded: row[7],
+      dateCompleted: row[8],
+      notes: row[9],
+      timestamp: row[10],
+      createdBy: row[11],
+      _rowIndex: result.rowIndex,
     };
   }
 }

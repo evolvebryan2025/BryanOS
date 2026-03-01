@@ -35,3 +35,6 @@ nul
 
 # Ignore the separate bryan-finance-app repo
 bryan-finance-app/
+
+# Third-party skill packages
+antigravity-awesome-skills/

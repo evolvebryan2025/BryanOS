@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sumait AI - Team Operations Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/team-hub.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">S</span>
+        <div class="brand-text">
+          <span class="brand-name">Sumait AI</span>
+          <span class="brand-sub">Team Ops</span>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="#assignments" class="nav-link active" data-section="assignments">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </span>
+          Assignments
+        </a>
+        <a href="#task-flow" class="nav-link" data-section="task-flow">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </span>
+          Task Flow
+        </a>
+        <a href="#build-queue-guide" class="nav-link" data-section="build-queue-guide">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          </span>
+          Build Queue
+        </a>
+        <a href="#communication" class="nav-link" data-section="communication">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </span>
+          Comms Rules
+        </a>
+        <a href="#roles" class="nav-link" data-section="roles">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </span>
+          Bryan vs Team
+        </a>
+        <a href="#sops" class="nav-link" data-section="sops">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </span>
+          SOPs
+        </a>
+      </div>
+      <div class="sidebar-footer">
+        <a href="/build-queue.html" class="nav-link nav-external">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </span>
+          Build Queue App
+        </a>
+      </div>
+    </nav>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+      <button class="mobile-menu-btn" id="mobile-menu-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <span class="mobile-brand">Sumait AI — Team Ops</span>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- ═══════════════════════════════════════════ -->
+      <!-- SECTION 1: ASSIGNMENTS -->
+      <!-- ═══════════════════════════════════════════ -->
+      <section id="assignments" class="content-section active">
+        <div class="section-header">
+          <h1>Team Assignments</h1>
+          <p class="section-desc">Who owns which client. Effective March 3, 2026.</p>
+        </div>
+
+        <!-- Shift Timeline -->
+        <div class="timeline-card">
+          <h2>Shift Coverage (PH Time)</h2>
+          <div class="timeline">
+            <div class="timeline-hours">
+              <span>6am</span><span>8am</span><span>10am</span><span>12pm</span><span>2pm</span><span>4pm</span><span>6pm</span><span>8pm</span><span>10pm</span><span>12am</span><span>2am</span>
+            </div>
+            <div class="timeline-row">
+              <span class="timeline-label">Bryan</span>
+              <div class="timeline-bar-track">
+                <div class="timeline-bar bar-bryan" style="left:10%;width:15%" title="8-11am: Meetings">8-11am</div>
+                <div class="timeline-bar bar-bryan" style="left:55%;width:20%" title="5-9pm: Prince + Sales">5-9pm</div>
+              </div>
+            </div>
+            <div class="timeline-row">
+              <span class="timeline-label">Lee</span>
+              <div class="timeline-bar-track">
+                <div class="timeline-bar bar-lee" style="left:10%;width:40%" title="8am-4pm">8am-4pm</div>
+              </div>
+            </div>
+            <div class="timeline-row">
+              <span class="timeline-label">Vee</span>
+              <div class="timeline-bar-track">
+                <div class="timeline-bar bar-vee" style="left:35%;width:40%" title="1pm-9pm">1pm-9pm</div>
+              </div>
+            </div>
+            <div class="timeline-row">
+              <span class="timeline-label">John</span>
+              <div class="timeline-bar-track">
+                <div class="timeline-bar bar-john" style="left:70%;width:30%" title="8pm-2am">8pm-2am</div>
+              </div>
+            </div>
+            <div class="timeline-row">
+              <span class="timeline-label">Adam</span>
+              <div class="timeline-bar-track">
+                <div class="timeline-bar bar-adam" style="left:70%;width:15%" title="8pm+ (flexible)">8pm+</div>
+              </div>
+            </div>
+          </div>
+          <p class="timeline-note">Full coverage. No gaps. Lee covers morning, Vee bridges afternoon, John covers night.</p>
+        </div>
+
+        <!-- Assignment Cards -->
+        <div class="assignment-grid">
+
+          <div class="assignment-card card-lee">
+            <div class="card-header">
+              <div class="avatar avatar-lee">L</div>
+              <div class="card-identity">
+                <h3>Lee</h3>
+                <span class="card-role">Builder + QA</span>
+              </div>
+              <span class="shift-badge">Morning</span>
+            </div>
+            <div class="card-body">
+              <div class="client-tag primary">
+                <span class="tag-label">Primary</span>
+                <span class="tag-client">Kyle</span>
+              </div>
+              <div class="client-tag secondary">
+                <span class="tag-label">Secondary</span>
+                <span class="tag-client">Thomas cold email + Prince overflow</span>
+              </div>
+              <ul class="card-details">
+                <li>Owns all Kyle delivery end-to-end</li>
+                <li>QA reviews Vee's Prince builds (1-4pm overlap)</li>
+                <li>Internal builds when client work is light</li>
+                <li>Salaried — busy 7-8 hours/day expected</li>
+              </ul>
+            </div>
+            <div class="card-footer">
+              <span class="schedule-tag">8am - 4pm</span>
+              <span class="specialty-tag">All Systems</span>
+            </div>
+          </div>
+
+          <div class="assignment-card card-vee">
+            <div class="card-header">
+              <div class="avatar avatar-vee">V</div>
+              <div class="card-identity">
+                <h3>Vee</h3>
+                <span class="card-role">Afternoon Builder</span>
+              </div>
+              <span class="shift-badge shift-new">NEW</span>
+            </div>
+            <div class="card-body">
+              <div class="client-tag primary">
+                <span class="tag-label">Primary</span>
+                <span class="tag-client">Prince</span>
+              </div>
+              <ul class="card-details">
+                <li>Owns ALL Prince builds (GHL + n8n + everything)</li>
+                <li>Bryan attends call 5-7pm, then posts task list</li>
+                <li>Pull from Prince Build Queue — don't wait for Bryan</li>
+                <li>Uses Claude Code for speed — that's the edge</li>
+              </ul>
+            </div>
+            <div class="card-footer">
+              <span class="schedule-tag">1pm - 9pm</span>
+              <span class="specialty-tag">GHL, n8n, Web Apps</span>
+            </div>
+          </div>
+
+          <div class="assignment-card card-john">
+            <div class="card-header">
+              <div class="avatar avatar-john">J</div>
+              <div class="card-identity">
+                <h3>John</h3>
+                <span class="card-role">Night Shift</span>
+              </div>
+              <span class="shift-badge">Night</span>
+            </div>
+            <div class="card-body">
+              <div class="client-tag primary">
+                <span class="tag-label">Continues</span>
+                <span class="tag-client">Prince (night)</span>
+              </div>
+              <ul class="card-details">
+                <li>Picks up where Vee left off after 9pm</li>
+                <li>Bryan posts evening task list by 7:30pm</li>
+                <li>Only clock in when tasks exist — no standby hours</li>
+                <li>Hourly</li>
+              </ul>
+            </div>
+            <div class="card-footer">
+              <span class="schedule-tag">8pm - 2am</span>
+              <span class="specialty-tag">GHL, n8n</span>
+            </div>
+          </div>
+
+          <div class="assignment-card card-adam">
+            <div class="card-header">
+              <div class="avatar avatar-adam">A</div>
+              <div class="card-identity">
+                <h3>Adam</h3>
+                <span class="card-role">GHL Specialist</span>
+              </div>
+              <span class="shift-badge">Night</span>
+            </div>
+            <div class="card-body">
+              <div class="client-tag primary">
+                <span class="tag-label">Primary</span>
+                <span class="tag-client">Juan</span>
+              </div>
+              <div class="client-tag secondary">
+                <span class="tag-label">Secondary</span>
+                <span class="tag-client">Thomas GHL + new client GHL</span>
+              </div>
+              <ul class="card-details">
+                <li>Owns all Juan GHL work — full delivery</li>
+                <li>GHL only — no n8n, no web apps</li>
+                <li>No GHL work today? Don't clock in.</li>
+                <li>Hourly</li>
+              </ul>
+            </div>
+            <div class="card-footer">
+              <span class="schedule-tag">8pm+ (flexible)</span>
+              <span class="specialty-tag">GHL Only</span>
+            </div>
+          </div>
+
+          <div class="assignment-card card-jameel">
+            <div class="card-header">
+              <div class="avatar avatar-jameel">Jm</div>
+              <div class="card-identity">
+                <h3>Jameel</h3>
+                <span class="card-role">Builder on Demand</span>
+              </div>
+              <span class="shift-badge">Flex</span>
+            </div>
+            <div class="card-body">
+              <div class="client-tag primary">
+                <span class="tag-label">Primary</span>
+                <span class="tag-client">New clients + internal tools</span>
+              </div>
+              <ul class="card-details">
+                <li>Web apps, dashboards, n8n automations</li>
+                <li>Bryan assigns builds for new clients or internal tools</li>
+                <li>Lee gets first pick (salaried) — Jameel handles overflow</li>
+                <li>Hourly, flexible</li>
+              </ul>
+            </div>
+            <div class="card-footer">
+              <span class="schedule-tag">Flexible</span>
+              <span class="specialty-tag">Web Apps, n8n</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Client Ownership Table -->
+        <div class="table-card">
+          <h2>Client Ownership</h2>
+          <table class="ops-table">
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Primary Builder</th>
+                <th>Backup / Night</th>
+                <th>Bryan's Involvement</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Prince</strong></td>
+                <td><span class="name-badge badge-vee">Vee</span></td>
+                <td><span class="name-badge badge-john">John</span> (9pm+)</td>
+                <td>Daily call 5-7pm, task list, delegation</td>
+              </tr>
+              <tr>
+                <td><strong>Kyle</strong></td>
+                <td><span class="name-badge badge-lee">Lee</span></td>
+                <td>--</td>
+                <td>Daily call 8-9:30am Mon-Fri</td>
+              </tr>
+              <tr>
+                <td><strong>Juan</strong></td>
+                <td><span class="name-badge badge-adam">Adam</span></td>
+                <td>--</td>
+                <td>Weekly meeting Mon-Tue</td>
+              </tr>
+              <tr>
+                <td><strong>Thomas</strong></td>
+                <td><span class="name-badge badge-lee">Lee</span></td>
+                <td><span class="name-badge badge-adam">Adam</span> (GHL)</td>
+                <td>Cold email system warmup</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════ -->
+      <!-- SECTION 2: TASK FLOW -->
+      <!-- ═══════════════════════════════════════════ -->
+      <section id="task-flow" class="content-section">
+        <div class="section-header">
+          <h1>How Tasks Flow</h1>
+          <p class="section-desc">Every client, every meeting. No exceptions.</p>
+        </div>
+
+        <div class="flow-pipeline">
+          <div class="flow-step">
+            <div class="step-number">1</div>
+            <div class="step-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <h3>Bryan Attends Meeting</h3>
+            <p>Bryan joins the client call. Listens, strategizes, takes notes. No one else attends.</p>
+            <span class="step-who">Bryan only</span>
+          </div>
+
+          <div class="flow-connector">
+            <svg width="40" height="24" viewBox="0 0 40 24"><path d="M0 12 L30 12 M25 6 L35 12 L25 18" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+
+          <div class="flow-step">
+            <div class="step-number">2</div>
+            <div class="step-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            </div>
+            <h3>Transcribe the Call</h3>
+            <p>Bryan transcribes the recording — voice note or meeting recording turned into text.</p>
+            <span class="step-who">Bryan only</span>
+          </div>
+
+          <div class="flow-connector">
+            <svg width="40" height="24" viewBox="0 0 40 24"><path d="M0 12 L30 12 M25 6 L35 12 L25 18" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+
+          <div class="flow-step step-ai">
+            <div class="step-number">3</div>
+            <div class="step-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <h3>AI Processes Transcript</h3>
+            <p>Paste into the Build Queue dashboard. AI extracts tasks, priorities, timestamps, and deliverables automatically.</p>
+            <span class="step-who">Bryan — 2 min</span>
+          </div>
+
+          <div class="flow-connector">
+            <svg width="40" height="24" viewBox="0 0 40 24"><path d="M0 12 L30 12 M25 6 L35 12 L25 18" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+
+          <div class="flow-step">
+            <div class="step-number">4</div>
+            <div class="step-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <h3>Task List Posted</h3>
+            <p>Tasks auto-created in Google Sheets. Notification fires to Telegram group chat. Team sees it instantly.</p>
+            <span class="step-who">Automated</span>
+          </div>
+
+          <div class="flow-connector">
+            <svg width="40" height="24" viewBox="0 0 40 24"><path d="M0 12 L30 12 M25 6 L35 12 L25 18" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+
+          <div class="flow-step step-team">
+            <div class="step-number">5</div>
+            <div class="step-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            </div>
+            <h3>Builder Executes</h3>
+            <p>Assigned builder pulls task from queue. Updates status. Builds it. Posts completion update in group chat.</p>
+            <span class="step-who">Team</span>
+          </div>
+
+          <div class="flow-connector">
+            <svg width="40" height="24" viewBox="0 0 40 24"><path d="M0 12 L30 12 M25 6 L35 12 L25 18" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+
+          <div class="flow-step">
+            <div class="step-number">6</div>
+            <div class="step-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <h3>Bryan Reviews in Next Meeting</h3>
+            <p>Completed work gets reviewed with the client in the next call. Loop restarts.</p>
+            <span class="step-who">Bryan</span>
+          </div>
+        </div>
+
+        <!-- Time Per Cycle -->
+        <div class="highlight-card">
+          <div class="highlight-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <h3>2-3 minutes per cycle</h3>
+            <p>Transcript processing + review. Bryan's total delegation time per meeting is under 5 minutes. The rest is team execution.</p>
+          </div>
+        </div>
+
+        <!-- Daily Schedule -->
+        <div class="table-card">
+          <h2>Bryan's Daily Schedule (PH Time)</h2>
+          <table class="ops-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Activity</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>8:00 - 9:30am</strong></td>
+                <td>Kyle meeting</td>
+                <td>Mon-Fri. Transcribe after.</td>
+              </tr>
+              <tr>
+                <td><strong>9:30 - 10:00am</strong></td>
+                <td>Break</td>
+                <td>Breakfast</td>
+              </tr>
+              <tr>
+                <td><strong>10:00 - 10:30am</strong></td>
+                <td>Process Kyle transcript</td>
+                <td>Paste into Build Queue, delegate to Lee + Vee</td>
+              </tr>
+              <tr>
+                <td><strong>10:30 - 11:00am</strong></td>
+                <td>Juan meeting (Mon-Tue) / Loom outreach (Wed-Fri)</td>
+                <td>Juan may extend to ~12pm</td>
+              </tr>
+              <tr class="row-highlight">
+                <td><strong>11:00am - 5:00pm</strong></td>
+                <td>OFF</td>
+                <td>Bryan does not work. Team executes.</td>
+              </tr>
+              <tr>
+                <td><strong>5:00 - 7:00pm</strong></td>
+                <td>Prince call</td>
+                <td>1-3 hours, varies daily Mon-Fri</td>
+              </tr>
+              <tr>
+                <td><strong>7:00 - 7:30pm</strong></td>
+                <td>Process Prince transcript</td>
+                <td>Delegate to Vee + John</td>
+              </tr>
+              <tr>
+                <td><strong>7:30 - 9:00pm</strong></td>
+                <td>SALES TIME</td>
+                <td>Loom outreach, respond to prospects, take calls</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════ -->
+      <!-- SECTION 3: BUILD QUEUE GUIDE -->
+      <!-- ═══════════════════════════════════════════ -->
+      <section id="build-queue-guide" class="content-section">
+        <div class="section-header">
+          <h1>Build Queue — How It Works</h1>
+          <p class="section-desc">The single source of truth for what needs to be built.</p>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-card-num">1</div>
+            <h3>Bryan adds tasks after every meeting</h3>
+            <p>AI processes the transcript. Tasks are auto-created in Google Sheets with priority, system type, and auto-assigned builder.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">2</div>
+            <h3>Pull from the queue — highest priority first</h3>
+            <p>Don't wait for Bryan to personally assign you. See a high-priority task in your lane? Grab it.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">3</div>
+            <h3>Change status to "In Progress"</h3>
+            <p>This prevents duplicate work. If someone sees "In Progress" with your name, they know you're on it.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">4</div>
+            <h3>Build it. Post "Done" + update.</h3>
+            <p>Change status to "Done" in the sheet. Post a 1-line summary in the group chat.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">5</div>
+            <h3>Blocked? Change to "Blocked" immediately</h3>
+            <p>Don't sit on a blocker. Post in group chat what you need. Move to the next task.</p>
+          </div>
+        </div>
+
+        <!-- DO NOTs -->
+        <div class="warning-card">
+          <h2>Do NOT</h2>
+          <div class="warning-list">
+            <div class="warning-item">
+              <span class="warning-x">X</span>
+              <span>Wait for Bryan to personally assign you a task from the queue — pull it yourself</span>
+            </div>
+            <div class="warning-item">
+              <span class="warning-x">X</span>
+              <span>Work on low-priority items when high-priority items exist</span>
+            </div>
+            <div class="warning-item">
+              <span class="warning-x">X</span>
+              <span>Start a task without updating the status (prevents duplicate work)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Reference -->
+        <div class="table-card">
+          <h2>Status Reference</h2>
+          <table class="ops-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Meaning</th>
+                <th>Who Sets It</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="status-pill pill-not-started">Not Started</span></td>
+                <td>Task exists, nobody has picked it up yet</td>
+                <td>Auto (on creation)</td>
+              </tr>
+              <tr>
+                <td><span class="status-pill pill-in-progress">In Progress</span></td>
+                <td>A builder is actively working on this</td>
+                <td>Builder (when starting)</td>
+              </tr>
+              <tr>
+                <td><span class="status-pill pill-done">Done</span></td>
+                <td>Task is complete</td>
+                <td>Builder (when finished)</td>
+              </tr>
+              <tr>
+                <td><span class="status-pill pill-qa">QA</span></td>
+                <td>Ready for Lee to review</td>
+                <td>Builder (requesting review)</td>
+              </tr>
+              <tr>
+                <td><span class="status-pill pill-blocked">Blocked</span></td>
+                <td>Can't continue — waiting on something</td>
+                <td>Builder (when stuck)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Open Build Queue -->
+        <div class="cta-card">
+          <a href="/build-queue.html" class="cta-btn">Open Build Queue Dashboard</a>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════ -->
+      <!-- SECTION 4: COMMUNICATION RULES -->
+      <!-- ═══════════════════════════════════════════ -->
+      <section id="communication" class="content-section">
+        <div class="section-header">
+          <h1>Communication Rules</h1>
+          <p class="section-desc">How we talk. Where we talk. What we don't do.</p>
+        </div>
+
+        <div class="rules-grid">
+          <div class="rule-card rule-do">
+            <div class="rule-header">
+              <span class="rule-icon rule-icon-do">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <h3>Post updates in group chat</h3>
+            </div>
+            <p>Everyone stays in the loop. Bryan doesn't become a bottleneck. The group chat is the system of record.</p>
+          </div>
+
+          <div class="rule-card rule-dont">
+            <div class="rule-header">
+              <span class="rule-icon rule-icon-dont">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </span>
+              <h3>Don't DM Bryan</h3>
+            </div>
+            <p>Questions in group chat so everyone sees the answer. No private threads. No bottlenecks.</p>
+          </div>
+
+          <div class="rule-card rule-do">
+            <div class="rule-header">
+              <span class="rule-icon rule-icon-do">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <h3>Flag blockers immediately</h3>
+            </div>
+            <p>Don't sit on a blocker for hours. Post: "Blocked on [X] — need [Y] to continue."</p>
+          </div>
+
+          <div class="rule-card rule-dont">
+            <div class="rule-header">
+              <span class="rule-icon rule-icon-dont">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </span>
+              <h3>Don't message Bryan 11am-5pm</h3>
+            </div>
+            <p>He's off. Handle it yourself or ask Lee/Vee. Only exception: client system is down.</p>
+          </div>
+
+          <div class="rule-card rule-do">
+            <div class="rule-header">
+              <span class="rule-icon rule-icon-do">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <h3>Handoff notes are mandatory</h3>
+            </div>
+            <p>Shift ends? Leave a note: what's done, what's next, any gotchas. 2 minutes. Every time.</p>
+          </div>
+
+          <div class="rule-card rule-dont">
+            <div class="rule-header">
+              <span class="rule-icon rule-icon-dont">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </span>
+              <h3>Don't message clients directly</h3>
+            </div>
+            <p>All client comms go through Bryan. If a client messages you, forward to Bryan. Don't respond.</p>
+          </div>
+        </div>
+
+        <!-- Client Communication Table -->
+        <div class="table-card">
+          <h2>Client Communication Protocol</h2>
+          <table class="ops-table">
+            <thead>
+              <tr>
+                <th>Situation</th>
+                <th>What To Do</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Team member needs something from client</td>
+                <td>Message Bryan: "Need [X] from [client] to continue [task]"</td>
+              </tr>
+              <tr>
+                <td>Client messages you directly</td>
+                <td>Forward to Bryan immediately. Don't respond yourself.</td>
+              </tr>
+              <tr>
+                <td>Bryan tells you to message a client</td>
+                <td>Exception — go ahead and do it.</td>
+              </tr>
+              <tr>
+                <td>Queue is empty, what now?</td>
+                <td>Message group chat: "Queue clear. Available for tasks."</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Handoff Template -->
+        <div class="template-card">
+          <div class="template-header">
+            <h2>Handoff Template</h2>
+            <button class="copy-btn" id="copy-handoff">Copy</button>
+          </div>
+          <pre class="template-code" id="handoff-template">HANDOFF: [Your Name] → [Next Person]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Finished:
+- [Task 1]
+- [Task 2]
+
+🔄 In Progress:
+- [Task 3] — current state: [where you left off]
+
+⏭️ Next Up (for the next person):
+- [Task 4] from build queue (high priority)
+
+🚫 Blockers:
+- [None / describe what's stuck]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</pre>
+        </div>
+
+        <!-- Shift Handoff Chain -->
+        <div class="highlight-card">
+          <div class="highlight-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          </div>
+          <div>
+            <h3>Handoff Chain</h3>
+            <p><strong>Lee</strong> (morning) → <strong>Vee</strong> (afternoon) → <strong>John</strong> (night). Each handoff requires a message in the group chat. Takes 2 minutes. Do it every time.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════ -->
+      <!-- SECTION 5: BRYAN VS TEAM -->
+      <!-- ═══════════════════════════════════════════ -->
+      <section id="roles" class="content-section">
+        <div class="section-header">
+          <h1>Bryan vs. Team</h1>
+          <p class="section-desc">Clear lanes. No confusion.</p>
+        </div>
+
+        <div class="vs-container">
+          <div class="vs-column vs-bryan">
+            <div class="vs-header">
+              <h2>Bryan's Job</h2>
+              <span class="vs-subtitle">Meetings + Sales + Delegation</span>
+            </div>
+            <ul class="vs-list">
+              <li>
+                <span class="vs-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Attend all client meetings
+              </li>
+              <li>
+                <span class="vs-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Transcribe + delegate tasks
+              </li>
+              <li>
+                <span class="vs-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Sales (Loom outreach, calls, closing)
+              </li>
+              <li>
+                <span class="vs-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Review work in the NEXT meeting
+              </li>
+              <li>
+                <span class="vs-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Set priorities and direction
+              </li>
+              <li>
+                <span class="vs-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Handle client relationships
+              </li>
+            </ul>
+          </div>
+
+          <div class="vs-divider">
+            <span class="vs-badge">VS</span>
+          </div>
+
+          <div class="vs-column vs-team">
+            <div class="vs-header">
+              <h2>Team's Job</h2>
+              <span class="vs-subtitle">Build + Execute + Update</span>
+            </div>
+            <ul class="vs-list">
+              <li>
+                <span class="vs-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Build everything
+              </li>
+              <li>
+                <span class="vs-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Execute tasks from the build queue
+              </li>
+              <li>
+                <span class="vs-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Deliver quality work on time
+              </li>
+              <li>
+                <span class="vs-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Post updates as tasks complete
+              </li>
+              <li>
+                <span class="vs-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Pull highest-priority tasks first
+              </li>
+              <li>
+                <span class="vs-check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Handle technical execution
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Bryan Does NOT -->
+        <div class="warning-card warning-critical">
+          <h2>If Bryan is building, something is wrong.</h2>
+          <div class="warning-list">
+            <div class="warning-item">
+              <span class="warning-x">X</span>
+              <span>Bryan does NOT build anything</span>
+            </div>
+            <div class="warning-item">
+              <span class="warning-x">X</span>
+              <span>Bryan does NOT QA anything (Lee handles QA for Vee's work)</span>
+            </div>
+            <div class="warning-item">
+              <span class="warning-x">X</span>
+              <span>Bryan does NOT debug anything</span>
+            </div>
+            <div class="warning-item">
+              <span class="warning-x">X</span>
+              <span>Bryan does NOT design anything</span>
+            </div>
+          </div>
+          <p class="warning-footer">Flag it if Bryan is doing execution work. That means the system broke.</p>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════ -->
+      <!-- SECTION 6: SOPs -->
+      <!-- ═══════════════════════════════════════════ -->
+      <section id="sops" class="content-section">
+        <div class="section-header">
+          <h1>Standard Operating Procedures</h1>
+          <p class="section-desc">9 SOPs. Follow every one. Every day.</p>
+        </div>
+
+        <!-- SOP Accordion -->
+        <div class="sop-list">
+
+          <div class="sop-item" data-sop="1">
+            <button class="sop-header">
+              <div class="sop-title">
+                <span class="sop-num">01</span>
+                <span>Start of Shift</span>
+              </div>
+              <span class="sop-time">5 min</span>
+              <span class="sop-chevron">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </button>
+            <div class="sop-body">
+              <p class="sop-intro">When you clock in, do these 3 things FIRST:</p>
+              <div class="sop-steps">
+                <div class="sop-step">
+                  <span class="sop-step-num">1</span>
+                  <div>
+                    <strong>Check the Build Queue</strong>
+                    <p>Open the Google Sheet for your assigned client(s). See what's high priority.</p>
+                  </div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">2</span>
+                  <div>
+                    <strong>Read the group chat</strong>
+                    <p>Scroll up to the last handoff note and any new messages from Bryan. Don't miss context.</p>
+                  </div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">3</span>
+                  <div>
+                    <strong>Update your status</strong>
+                    <p>Post in the group chat: "Clocked in. Starting on [task name]."</p>
+                  </div>
+                </div>
+              </div>
+              <p class="sop-rule">Then start building.</p>
+            </div>
+          </div>
+
+          <div class="sop-item" data-sop="2">
+            <button class="sop-header">
+              <div class="sop-title">
+                <span class="sop-num">02</span>
+                <span>Working on a Task</span>
+              </div>
+              <span class="sop-time">Ongoing</span>
+              <span class="sop-chevron">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </button>
+            <div class="sop-body">
+              <h4>Before you start:</h4>
+              <ul>
+                <li>Change the task status to <strong>"In Progress"</strong></li>
+                <li>Make sure no one else is already working on it (check "Assigned To" column)</li>
+              </ul>
+              <h4>While you work:</h4>
+              <ul>
+                <li>Need access, logins, or context — message the group chat immediately, don't wait</li>
+                <li>Hit a blocker — post it: "Blocked on [X]. Need [Y] from [person]."</li>
+                <li>Task takes longer — post: "Still working on [X]. ETA: [time]."</li>
+              </ul>
+              <h4>When you finish:</h4>
+              <ul>
+                <li>Change status to <strong>"Done"</strong></li>
+                <li>Post in group chat: "[Task name] — done. [1-line summary]."</li>
+                <li>If it needs QA, change to <strong>"Ready for QA"</strong> and tag Lee</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="sop-item" data-sop="3">
+            <button class="sop-header">
+              <div class="sop-title">
+                <span class="sop-num">03</span>
+                <span>End of Shift / Handoff</span>
+              </div>
+              <span class="sop-time">2 min</span>
+              <span class="sop-chevron">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </button>
+            <div class="sop-body">
+              <p class="sop-intro"><strong>Mandatory.</strong> Before you log off, post this in the group chat:</p>
+              <div class="sop-template">
+                <pre>HANDOFF: [Your Name] → [Next Person]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Finished:
+- [Task 1]
+- [Task 2]
+
+🔄 In Progress:
+- [Task 3] — current state: [where you left off]
+
+⏭️ Next Up (for the next person):
+- [Task 4] from build queue (high priority)
+
+🚫 Blockers:
+- [None / describe what's stuck]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</pre>
+                <button class="copy-btn copy-btn-sm" data-copy="handoff">Copy Template</button>
+              </div>
+              <p class="sop-rule">Do NOT skip handoffs. If the next person starts without knowing what you did, they waste time.</p>
+            </div>
+          </div>
+
+          <div class="sop-item" data-sop="4">
+            <button class="sop-header">
+              <div class="sop-title">
+                <span class="sop-num">04</span>
+                <span>Receiving Tasks from Bryan</span>
+              </div>
+              <span class="sop-time">Immediate</span>
+              <span class="sop-chevron">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </button>
+            <div class="sop-body">
+              <p class="sop-intro">After every client meeting, Bryan posts a task list in the group chat.</p>
+              <div class="sop-steps">
+                <div class="sop-step">
+                  <span class="sop-step-num">1</span>
+                  <div><strong>Read all tasks</strong> — understand the full picture, not just individual items</div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">2</span>
+                  <div><strong>Check priorities</strong> — Bryan marks High / Medium / Low. Start with High.</div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">3</span>
+                  <div><strong>Claim your tasks</strong> — Update Build Queue: set "Assigned To" = your name, status = "In Progress"</div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">4</span>
+                  <div><strong>Start immediately</strong> — no waiting for Bryan to confirm. If he posted it, it's approved.</div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">5</span>
+                  <div><strong>Ask questions in the group chat</strong> — not in DMs to Bryan. Everyone should see the answer.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sop-item" data-sop="5">
+            <button class="sop-header">
+              <div class="sop-title">
+                <span class="sop-num">05</span>
+                <span>QA Process (Lee)</span>
+              </div>
+              <span class="sop-time">15-30 min</span>
+              <span class="sop-chevron">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </button>
+            <div class="sop-body">
+              <p class="sop-intro">When a build is marked "Ready for QA":</p>
+              <div class="sop-steps">
+                <div class="sop-step">
+                  <span class="sop-step-num">1</span>
+                  <div><strong>Open the build</strong> — log into the client's system and test it</div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">2</span>
+                  <div>
+                    <strong>Run through this checklist:</strong>
+                    <table class="sop-table">
+                      <tr><td>Does it work?</td><td>Click every button, test every flow, trigger every automation</td></tr>
+                      <tr><td>Does it match?</td><td>Compare what was built to what Bryan requested</td></tr>
+                      <tr><td>No errors?</td><td>Check for broken links, missing fields, error messages</td></tr>
+                      <tr><td>Client-ready?</td><td>Would you show this to the client right now? If no, send it back.</td></tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">3</span>
+                  <div><strong>If pass:</strong> Change status to "Done". Post: "QA passed on [task]."</div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">4</span>
+                  <div><strong>If fail:</strong> Change status to "QA Failed." Post what's wrong and send back to builder.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sop-item" data-sop="6">
+            <button class="sop-header">
+              <div class="sop-title">
+                <span class="sop-num">06</span>
+                <span>Client Communication Rules</span>
+              </div>
+              <span class="sop-time">Always</span>
+              <span class="sop-chevron">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </button>
+            <div class="sop-body">
+              <table class="ops-table">
+                <tbody>
+                  <tr>
+                    <td><strong>Team does NOT message clients directly</strong></td>
+                    <td>All client communication goes through Bryan</td>
+                  </tr>
+                  <tr>
+                    <td><strong>If a client messages you</strong></td>
+                    <td>Forward it to Bryan immediately. Don't respond yourself.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>If you need something from the client</strong></td>
+                    <td>Message Bryan: "Need [X] from [client name] to continue [task]"</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Exception</strong></td>
+                    <td>If Bryan explicitly tells you to message a client, then do it.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="sop-item" data-sop="7">
+            <button class="sop-header">
+              <div class="sop-title">
+                <span class="sop-num">07</span>
+                <span>When You're Idle</span>
+              </div>
+              <span class="sop-time">As needed</span>
+              <span class="sop-chevron">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </button>
+            <div class="sop-body">
+              <p class="sop-intro">If you finish everything in your build queue:</p>
+              <div class="sop-steps">
+                <div class="sop-step">
+                  <span class="sop-step-num">1</span>
+                  <div>Check the other build queues — is there overflow work you can pick up?</div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">2</span>
+                  <div>Check for internal builds — portfolio page, trackers, templates, SOPs</div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">3</span>
+                  <div>Message the group chat: "Queue clear. Available for tasks."</div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">4</span>
+                  <div><strong>Hourly workers</strong> (John, Adam, Jameel) — if genuinely nothing to do, <strong>clock out</strong>. Don't bill idle time.</div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">5</span>
+                  <div><strong>Salaried workers</strong> (Lee, Vee) — pick up internal builds or QA work. You're always on.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sop-item sop-emergency" data-sop="8">
+            <button class="sop-header">
+              <div class="sop-title">
+                <span class="sop-num">08</span>
+                <span>Emergency / System Down</span>
+              </div>
+              <span class="sop-time">ASAP</span>
+              <span class="sop-chevron">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </button>
+            <div class="sop-body">
+              <p class="sop-intro">If a client's system breaks (automation fails, website down, etc.):</p>
+              <div class="sop-steps">
+                <div class="sop-step">
+                  <span class="sop-step-num">1</span>
+                  <div>Post immediately: "🚨 [Client name] — [system] is down. Investigating."</div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">2</span>
+                  <div><strong>Fix it if you can</strong> — don't wait for Bryan. Get it back up first, explain later.</div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">3</span>
+                  <div>If you can't fix it — post what you tried and the error. Tag whoever built it.</div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">4</span>
+                  <div><strong>Message Bryan</strong> — even during off hours, system down = emergency.</div>
+                </div>
+                <div class="sop-step">
+                  <span class="sop-step-num">5</span>
+                  <div>Post resolution: "✅ [Client] — [system] back up. Cause: [X]. Fix: [Y]."</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sop-item" data-sop="9">
+            <button class="sop-header">
+              <div class="sop-title">
+                <span class="sop-num">09</span>
+                <span>Weekly Rhythm</span>
+              </div>
+              <span class="sop-time">Weekly</span>
+              <span class="sop-chevron">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </button>
+            <div class="sop-body">
+              <table class="ops-table">
+                <thead>
+                  <tr>
+                    <th>Day</th>
+                    <th>What Happens</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Monday</strong></td>
+                    <td>Fresh start. Check build queues. Lee: Kyle tasks. Vee: Prince queue.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Tue-Thu</strong></td>
+                    <td>Execution. Pull from queues. Post updates. Handoff at shift end.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Friday</strong></td>
+                    <td>Wrap up. Clear your queue. Leave handoff notes for Monday. Flag anything for Bryan.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Sat-Sun</strong></td>
+                    <td>Off for Bryan. Team may work if active tasks exist, but no new tasks posted until Monday.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Quick Reference Card -->
+        <div class="quick-ref-card">
+          <h2>Quick Reference</h2>
+          <div class="quick-ref-grid">
+            <div class="quick-ref-section">
+              <h4>START OF SHIFT</h4>
+              <ol>
+                <li>Check Build Queue</li>
+                <li>Read group chat</li>
+                <li>Post "Clocked in"</li>
+              </ol>
+            </div>
+            <div class="quick-ref-section">
+              <h4>DURING SHIFT</h4>
+              <ol>
+                <li>Pull highest priority task</li>
+                <li>Update status to "In Progress"</li>
+                <li>Build it</li>
+                <li>Update status to "Done"</li>
+                <li>Post update in group chat</li>
+                <li>Pull next task</li>
+              </ol>
+            </div>
+            <div class="quick-ref-section">
+              <h4>END OF SHIFT</h4>
+              <ol>
+                <li>Post handoff note</li>
+                <li>Update all task statuses</li>
+                <li>Log off</li>
+              </ol>
+            </div>
+            <div class="quick-ref-section">
+              <h4>BLOCKED?</h4>
+              <ol>
+                <li>Post in group chat immediately</li>
+                <li>Don't sit on it</li>
+              </ol>
+            </div>
+          </div>
+          <p class="quick-ref-footer">The system is simple: Bryan delegates, you execute, everyone posts updates.</p>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/js/team-hub.js"></script>
+</body>
+</html>

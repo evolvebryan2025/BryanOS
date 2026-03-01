@@ -7,6 +7,11 @@ class NotificationService {
   }
 
   async sendTaskNotification(event, task, updatedBy = null) {
+    if (!this.webhookUrl) {
+      console.log(`Notification skipped (${event}): No webhook URL configured`);
+      return { success: false, error: 'No webhook URL configured' };
+    }
+
     try {
       const payload = {
         event,
@@ -46,6 +51,33 @@ class NotificationService {
 
   async notifyTaskCompleted(task) {
     return this.sendTaskNotification('task_completed', task);
+  }
+
+  async notifyTranscriptProcessed(client, taskCount, provider) {
+    if (!this.webhookUrl) {
+      console.log('Notification skipped (transcript_processed): No webhook URL configured');
+      return { success: false, error: 'No webhook URL configured' };
+    }
+
+    try {
+      const payload = {
+        event: 'transcript_processed',
+        client,
+        taskCount,
+        provider,
+        timestamp: new Date().toISOString(),
+      };
+
+      const response = await axios.post(this.webhookUrl, payload, {
+        timeout: 30000,
+      });
+
+      console.log('Notification sent (transcript_processed):', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Notification failed:', error.message);
+      return { success: false, error: error.message };
+    }
   }
 }
 

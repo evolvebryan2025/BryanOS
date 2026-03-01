@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sumait AI - Referral Message Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/referral-messages.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Referral Messages</h1>
+      <div class="header-actions">
+        <a href="/build-queue.html" class="btn btn-secondary btn-link">Build Queue</a>
+      </div>
+    </header>
+
+    <!-- Pitch Configuration -->
+    <section class="pitch-section">
+      <h2>Your Pitch</h2>
+      <div class="form-row">
+        <div class="form-group form-group-wide">
+          <label for="pitch-input">What service/product are you asking referrals for?</label>
+          <input
+            type="text"
+            id="pitch-input"
+            class="form-control"
+            placeholder="e.g. AI automation services for small businesses"
+          >
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="offer-input">Special offer for referrals (optional)</label>
+          <input
+            type="text"
+            id="offer-input"
+            class="form-control"
+            placeholder="e.g. Free 30-min consultation"
+          >
+        </div>
+        <div class="form-group">
+          <label for="sender-input">Your name / business</label>
+          <input
+            type="text"
+            id="sender-input"
+            class="form-control"
+            value="Bryan / Sumait AI"
+            placeholder="Bryan / Sumait AI"
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Contacts Section -->
+    <section class="contacts-section">
+      <div class="section-header">
+        <h2>Contacts</h2>
+        <span class="contact-count" id="contact-count">0 / 10</span>
+      </div>
+
+      <div class="contacts-table-wrap">
+        <table class="contacts-table" id="contacts-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Relationship</th>
+              <th>Platform</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="contacts-tbody">
+            <!-- Rows added by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="contacts-actions">
+        <button id="add-contact-btn" class="btn btn-secondary">+ Add Contact</button>
+        <button id="generate-btn" class="btn btn-primary">Generate All Messages</button>
+      </div>
+    </section>
+
+    <!-- Processing Spinner -->
+    <div id="processing-spinner" class="spinner hidden">
+      <div class="spinner-icon"></div>
+      <p>Generating personalized messages...</p>
+    </div>
+
+    <!-- Generated Messages -->
+    <section id="messages-section" class="messages-section hidden">
+      <div class="section-header">
+        <h2>Generated Messages</h2>
+        <div class="progress-badge" id="progress-badge">0 / 0 copied</div>
+      </div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+      </div>
+
+      <div id="messages-container" class="messages-container">
+        <!-- Message cards rendered by JS -->
+      </div>
+    </section>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+  </div>
+
+  <script src="/js/referral-messages.js"></script>
+</body>
+</html>

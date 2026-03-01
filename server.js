@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const GoogleSheetsService = require('./services/googleSheets');
@@ -14,11 +15,24 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
 
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { error: 'Too many requests, please try again later' },
+});
+app.use('/api/', apiLimiter);
+
 // Services
 const sheets = new GoogleSheetsService();
 const aiAgent = new AIAgent();
 const assignmentRules = new AssignmentRulesService();
 const notifications = new NotificationService();
+
+// Validation helper
+function validateTaskId(taskId) {
+  const id = parseInt(taskId, 10);
+  return !isNaN(id) && id >= 0 && String(id) === String(taskId);
+}
 
 // Process transcript with AI
 app.post('/api/process-transcript', async (req, res) => {
@@ -45,6 +59,9 @@ app.post('/api/process-transcript', async (req, res) => {
       client,
     }));
 
+    // Fire webhook notification for transcript processed
+    await notifications.notifyTranscriptProcessed(client, tasks.length, provider);
+
     res.json({
       success: true,
       formatted,
@@ -68,6 +85,12 @@ app.post('/api/tasks/create', async (req, res) => {
       return res.status(400).json({ error: 'Missing tasks array' });
     }
 
+    for (const task of tasks) {
+      if (!task.title || typeof task.title !== 'string' || task.title.trim().length === 0) {
+        return res.status(400).json({ error: 'Each task must have a non-empty title' });
+      }
+    }
+
     // Get next task ID
     const existingTasks = await sheets.readSheet('Build Queue');
     const nextId = existingTasks.length; // Header is row 1, so length = next ID
@@ -78,9 +101,8 @@ app.post('/api/tasks/create', async (req, res) => {
     for (let i = 0; i < tasks.length; i++) {
       const task = tasks[i];
 
-      // Suggest assignee
-      const suggestedAssignee = await assignmentRules.suggestAssignee(task);
-      const assignee = task.assignee || suggestedAssignee;
+      // Auto-assign using assignment rules engine
+      const assignee = await assignmentRules.suggestAssignee(task);
 
       const taskId = nextId + i;
       const dateAdded = new Date().toISOString().split('T')[0];
@@ -176,6 +198,9 @@ app.get('/api/tasks', async (req, res) => {
 app.patch('/api/tasks/:taskId', async (req, res) => {
   try {
     const { taskId } = req.params;
+    if (!validateTaskId(taskId)) {
+      return res.status(400).json({ error: 'Invalid task ID' });
+    }
     const { status, assignedTo, notes, updatedBy = 'Bryan' } = req.body;
 
     // Get current task
@@ -184,8 +209,7 @@ app.patch('/api/tasks/:taskId', async (req, res) => {
       return res.status(404).json({ error: 'Task not found' });
     }
 
-    // Find row index (taskId + 2 because header is row 1, IDs start at 1)
-    const rowIndex = parseInt(taskId) + 2;
+    const rowIndex = task._rowIndex;
 
     // Build updated row
     const updatedTask = {
@@ -228,6 +252,65 @@ app.patch('/api/tasks/:taskId', async (req, res) => {
   }
 });
 
+// Delete task
+app.delete('/api/tasks/:taskId', async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    if (!validateTaskId(taskId)) {
+      return res.status(400).json({ error: 'Invalid task ID' });
+    }
+
+    // Get current task
+    const task = await sheets.getTaskById(taskId);
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    const rowIndex = task._rowIndex;
+
+    // Delete row from sheet
+    await sheets.deleteRow('Build Queue', rowIndex);
+
+    res.json({ success: true, message: 'Task deleted successfully', taskId });
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Bulk delete tasks
+app.post('/api/tasks/bulk-delete', async (req, res) => {
+  try {
+    const { taskIds } = req.body;
+
+    if (!taskIds || !Array.isArray(taskIds) || taskIds.length === 0) {
+      return res.status(400).json({ error: 'Missing taskIds array' });
+    }
+
+    // Find actual row positions for each task
+    const rowsToDelete = [];
+    for (const taskId of taskIds) {
+      if (!validateTaskId(taskId)) continue;
+      const task = await sheets.getTaskById(taskId);
+      if (task) {
+        rowsToDelete.push(task._rowIndex);
+      }
+    }
+
+    // Sort descending so we delete from bottom up (avoids row shift issues)
+    rowsToDelete.sort((a, b) => b - a);
+
+    for (const rowIndex of rowsToDelete) {
+      await sheets.deleteRow('Build Queue', rowIndex);
+    }
+
+    res.json({ success: true, deleted: rowsToDelete.length });
+  } catch (error) {
+    console.error('Bulk delete error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get team members
 app.get('/api/config/team-members', async (req, res) => {
   try {
@@ -259,6 +342,97 @@ app.post('/api/assign/suggest', async (req, res) => {
   }
 });
 
+// Generate referral messages with AI
+app.post('/api/generate-referral-messages', async (req, res) => {
+  try {
+    const { contacts, pitch, offer, senderName } = req.body;
+
+    if (!contacts || !Array.isArray(contacts) || contacts.length === 0) {
+      return res.status(400).json({ error: 'Missing contacts array' });
+    }
+
+    if (!pitch || typeof pitch !== 'string' || pitch.trim().length === 0) {
+      return res.status(400).json({ error: 'Missing pitch description' });
+    }
+
+    for (const contact of contacts) {
+      if (!contact.name || !contact.relationship || !contact.platform) {
+        return res.status(400).json({
+          error: 'Each contact must have name, relationship, and platform'
+        });
+      }
+    }
+
+    console.log(`Generating referral messages for ${contacts.length} contacts`);
+
+    const result = await aiAgent.generateReferralMessages(
+      contacts,
+      pitch.trim(),
+      (offer || '').trim(),
+      (senderName || 'Bryan').trim()
+    );
+
+    res.json({
+      success: true,
+      messages: result.messages,
+      provider: result.provider,
+    });
+  } catch (error) {
+    console.error('Error generating referral messages:', error);
+    res.status(500).json({
+      error: error.message || 'Failed to generate referral messages'
+    });
+  }
+});
+
+// Regenerate a single referral message
+app.post('/api/regenerate-referral-message', async (req, res) => {
+  try {
+    const { contact, pitch, offer, senderName } = req.body;
+
+    if (!contact || !contact.name || !contact.relationship || !contact.platform) {
+      return res.status(400).json({ error: 'Missing contact details' });
+    }
+
+    if (!pitch) {
+      return res.status(400).json({ error: 'Missing pitch description' });
+    }
+
+    const result = await aiAgent.generateReferralMessages(
+      [contact],
+      pitch.trim(),
+      (offer || '').trim(),
+      (senderName || 'Bryan').trim()
+    );
+
+    res.json({
+      success: true,
+      message: result.messages[0],
+      provider: result.provider,
+    });
+  } catch (error) {
+    console.error('Error regenerating referral message:', error);
+    res.status(500).json({
+      error: error.message || 'Failed to regenerate message'
+    });
+  }
+});
+
+// Root route - serve the dashboard
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'build-queue.html'));
+});
+
+// Team Operations Hub
+app.get('/team-hub', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'team-hub.html'));
+});
+
+// Referral Messages
+app.get('/referral-messages', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'referral-messages.html'));
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
@@ -273,3 +447,5 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Build Queue server running on http://localhost:${PORT}`);
 });
+
+module.exports = { validateTaskId };

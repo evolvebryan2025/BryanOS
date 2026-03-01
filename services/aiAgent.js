@@ -25,7 +25,7 @@ OUTPUT FORMAT (follow this EXACTLY):
 Bryan x ${client} – ${new Date().toLocaleDateString()}
 
 🚨 PRIORITY #1 — [CATEGORY NAME]
-1️⃣ [Task Title] ([ASSIGNEE])
+1️⃣ [Task Title]
 ⏱ [timestamp if available]
 🗣 Word-for-Word:
 [relevant quotes if available]
@@ -46,17 +46,16 @@ DO NEXT (HIGH PRIORITY)
 DO LATER (MEDIUM/LOW)
 - [task]
 
-ASSIGNMENT RULES:
-- Prince tasks → Vee (or JOHN if after 9pm)
-- Kyle tasks → Lee
-- Juan tasks → Adam
-- GHL tasks → Adam
-- n8n tasks → Vee
-- Web App tasks → Jameel
-- New client builds → Jameel
-- Internal tools → Lee
+CRITICAL INSTRUCTIONS:
+1. Extract EVERY action item, bug, feature request, or task mentioned - even implied ones
+2. Break down complex tasks into multiple separate tasks if needed
+3. Include follow-up tasks, investigations, and validations as separate items
+4. Don't combine multiple tasks into one - create separate entries
+5. Look for implicit tasks (e.g., "this needs to be fixed" = create a fix task + test task)
+6. Include timestamps and quotes where available
+7. DO NOT suggest assignees - the system will auto-assign based on rules
 
-Extract all action items from the transcript, assign based on rules above, include timestamps and quotes where available in the transcript. Be thorough.`;
+Be EXTREMELY thorough - err on the side of creating MORE tasks rather than fewer.`;
   }
 
   async processWithClaude(transcript, client) {
@@ -105,16 +104,90 @@ Extract all action items from the transcript, assign based on rules above, inclu
     }
   }
 
+  buildReferralPrompt(contacts, pitch, offer, senderName) {
+    const contactList = contacts.map((c, i) =>
+      `${i + 1}. Name: ${c.name}, Relationship: ${c.relationship}, Platform: ${c.platform}`
+    ).join('\n');
+
+    return `You are a referral message writer for ${senderName}. Generate personalized referral request messages for each contact below.
+
+SERVICE/PRODUCT: ${pitch}
+${offer ? `SPECIAL OFFER FOR REFERRALS: ${offer}` : ''}
+SENDER: ${senderName}
+
+CONTACTS:
+${contactList}
+
+RULES:
+1. Each message must be UNIQUE — no two should feel the same
+2. Keep each message under 150 words
+3. Match the tone to the platform:
+   - WhatsApp/SMS: Casual, friendly, use short sentences
+   - Email: Professional but warm, include a subject line on the first line as "Subject: ..."
+   - LinkedIn: Networking tone, reference professional value
+   - Instagram DM: Brief, personable, emoji-friendly
+4. Reference the relationship naturally (e.g., "Since we worked together on..." or "As someone who knows the space...")
+5. Include a clear, specific ask: "If you know anyone who could use [service], I'd appreciate an intro"
+6. NEVER sound robotic, salesy, or template-like — each should feel genuinely written
+7. End with something warm and personal
+8. If there's a special offer, mention it naturally (not as a sales pitch)
+
+OUTPUT FORMAT (follow EXACTLY — use this JSON array format):
+[
+  {
+    "name": "Contact Name",
+    "platform": "WhatsApp",
+    "message": "The full message text here..."
+  },
+  ...
+]
+
+Return ONLY the JSON array, no other text.`;
+  }
+
+  async generateReferralMessages(contacts, pitch, offer, senderName) {
+    const prompt = this.buildReferralPrompt(contacts, pitch, offer, senderName);
+
+    try {
+      console.log('Generating referral messages with Claude...');
+      const message = await this.claude.messages.create({
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: prompt }],
+      });
+
+      const text = message.content[0].text;
+      const messages = JSON.parse(text);
+      return { messages, provider: 'claude' };
+    } catch (claudeError) {
+      console.log('Claude failed for referrals, trying OpenAI:', claudeError.message);
+
+      try {
+        const completion = await this.openai.chat.completions.create({
+          model: 'gpt-4-turbo',
+          max_tokens: 4000,
+          messages: [{ role: 'user', content: prompt }],
+        });
+
+        const text = completion.choices[0].message.content;
+        const messages = JSON.parse(text);
+        return { messages, provider: 'openai' };
+      } catch (openaiError) {
+        console.error('Both AI providers failed for referrals:', openaiError.message);
+        throw new Error('AI processing failed: Both Claude and OpenAI APIs are unavailable');
+      }
+    }
+  }
+
   parseTaskDocument(formatted) {
     const tasks = [];
 
-    // Extract tasks using regex
-    const taskRegex = /(\d️⃣)\s+(.+?)\s+\(([A-Za-z]+)\)/g;
+    // Extract tasks using regex (removed assignee extraction - let assignment rules handle it)
+    const taskRegex = /(\d️⃣)\s+(.+?)(?:\s+\([A-Za-z]+\))?$/gm;
     let match;
 
     while ((match = taskRegex.exec(formatted)) !== null) {
       const taskTitle = match[2].trim();
-      const assignee = match[3].trim();
 
       // Find priority for this task
       const taskIndex = match.index;
@@ -150,10 +223,12 @@ Extract all action items from the transcript, assign based on rules above, inclu
       else if (taskTitle.toLowerCase().includes('web') || taskTitle.toLowerCase().includes('app')) system = 'Web App';
       else if (taskTitle.toLowerCase().includes('voice')) system = 'Voice Agent';
       else if (taskTitle.toLowerCase().includes('email')) system = 'Cold Email';
+      else if (taskTitle.toLowerCase().includes('antigravity')) system = 'Antigravity';
+      else if (taskTitle.toLowerCase().includes('claude')) system = 'Claude Code';
 
       tasks.push({
         title: taskTitle,
-        assignee,
+        // assignee removed - let assignment rules engine handle it
         priority,
         system,
         timestamp,
