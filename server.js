@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json({ limit: '10mb' }));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -444,8 +444,11 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Build Queue server running on http://localhost:${PORT}`);
-});
+// Only listen when running locally (not on Vercel)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Build Queue server running on http://localhost:${PORT}`);
+  });
+}
 
-module.exports = { validateTaskId };
+module.exports = app;
