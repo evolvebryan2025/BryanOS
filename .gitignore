@@ -1,0 +1,37 @@
+# Worktrees
+.worktrees/
+worktrees/
+
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+
+# Google credentials
+google-credentials.json
+*.json.json
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Build outputs
+dist/
+build/
+
+# Temporary files
+*.tmp
+nul
+
+# Ignore the separate bryan-finance-app repo
+bryan-finance-app/
