@@ -28,6 +28,27 @@ const aiAgent = new AIAgent();
 const assignmentRules = new AssignmentRulesService();
 const notifications = new NotificationService();
 
+// Health check / diagnostic endpoint
+app.get('/api/health', (req, res) => {
+  const privateKey = process.env.GOOGLE_PRIVATE_KEY || '';
+  res.json({
+    status: 'ok',
+    env: {
+      hasOpenAI: !!process.env.OPENAI_API_KEY,
+      hasClaude: !!process.env.CLAUDE_API_KEY,
+      hasSheetId: !!process.env.GOOGLE_SHEET_ID,
+      hasServiceEmail: !!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      hasPrivateKey: !!process.env.GOOGLE_PRIVATE_KEY,
+      privateKeyLength: privateKey.length,
+      privateKeyStartsWith: privateKey.substring(0, 20),
+      privateKeyEndsWith: privateKey.substring(privateKey.length - 20),
+      hasWebhook: !!process.env.N8N_WEBHOOK_URL,
+      nodeEnv: process.env.NODE_ENV,
+      vercel: !!process.env.VERCEL,
+    },
+  });
+});
+
 // Validation helper
 function validateTaskId(taskId) {
   const id = parseInt(taskId, 10);
