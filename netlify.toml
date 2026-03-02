@@ -1,0 +1,32 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+  command = "npm install"
+
+[functions]
+  node_bundler = "esbuild"
+  included_files = ["services/**"]
+
+# API routes → Netlify Function
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/server/api/:splat"
+  status = 200
+  force = true
+
+# Clean URL routes for pages
+[[redirects]]
+  from = "/team-hub"
+  to = "/team-hub.html"
+  status = 200
+
+[[redirects]]
+  from = "/referral-messages"
+  to = "/referral-messages.html"
+  status = 200
+
+# Root serves the dashboard
+[[redirects]]
+  from = "/"
+  to = "/build-queue.html"
+  status = 200

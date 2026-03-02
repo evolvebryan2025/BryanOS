@@ -27,7 +27,8 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
     "googleapis": "^171.4.0",
-    "openai": "^6.25.0"
+    "openai": "^6.25.0",
+    "serverless-http": "^4.0.0"
   },
   "jest": {
     "testPathIgnorePatterns": [

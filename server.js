@@ -465,8 +465,8 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Only listen when running locally (not on Vercel)
-if (!process.env.VERCEL) {
+// Only listen when running directly (not imported by serverless wrapper)
+if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Build Queue server running on http://localhost:${PORT}`);
   });
