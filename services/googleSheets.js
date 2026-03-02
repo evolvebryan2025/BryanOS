@@ -1,18 +1,39 @@
 const { google } = require('googleapis');
 require('dotenv').config();
 
+function parsePrivateKey(key) {
+  if (!key) return '';
+  // Strip surrounding quotes if present (Vercel import can include them)
+  let parsed = key.replace(/^["']|["']$/g, '');
+  // Convert literal \n strings to actual newlines
+  parsed = parsed.replace(/\\n/g, '\n');
+  return parsed;
+}
+
 class GoogleSheetsService {
   constructor() {
+    const privateKey = parsePrivateKey(process.env.GOOGLE_PRIVATE_KEY);
+    const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+    const sheetId = process.env.GOOGLE_SHEET_ID;
+
+    if (!privateKey || !clientEmail || !sheetId) {
+      console.error('Google Sheets config missing:', {
+        hasPrivateKey: !!privateKey,
+        hasClientEmail: !!clientEmail,
+        hasSheetId: !!sheetId,
+      });
+    }
+
     this.auth = new google.auth.GoogleAuth({
       credentials: {
-        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        client_email: clientEmail,
+        private_key: privateKey,
       },
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
 
     this.sheets = google.sheets({ version: 'v4', auth: this.auth });
-    this.spreadsheetId = process.env.GOOGLE_SHEET_ID;
+    this.spreadsheetId = sheetId;
   }
 
   async readSheet(sheetName, range = 'A:Z') {
