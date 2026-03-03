@@ -25,6 +25,16 @@
   to = "/referral-messages.html"
   status = 200
 
+[[redirects]]
+  from = "/handoffs"
+  to = "/handoffs.html"
+  status = 200
+
+[[redirects]]
+  from = "/handoff"
+  to = "/handoff.html"
+  status = 200
+
 # Root serves the dashboard
 [[redirects]]
   from = "/"

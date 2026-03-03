@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Handoffs — BryanOS</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #0a0a0a; color: rgba(255,255,255,0.95); min-height: 100vh; }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+
+    /* Header */
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+    .header h1 { font-size: 24px; font-weight: 700; }
+    .header h1 span { color: #ef4444; }
+    .back-link { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 14px; }
+    .back-link:hover { color: #fff; }
+
+    /* Button styles */
+    .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary { background: #ef4444; color: #fff; }
+    .btn-primary:hover { background: #dc2626; }
+    .btn-secondary { background: #1a1a1a; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+    .btn-secondary:hover { background: #222; border-color: rgba(255,255,255,0.2); }
+    .btn-sm { padding: 6px 14px; font-size: 13px; }
+    .btn-ghost { background: none; color: rgba(255,255,255,0.5); border: none; padding: 6px 10px; }
+    .btn-ghost:hover { color: #fff; }
+    .btn-danger { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+    /* Card list */
+    .handoff-list { display: flex; flex-direction: column; gap: 12px; }
+    .handoff-card { background: #111; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px; transition: all 0.2s; cursor: pointer; }
+    .handoff-card:hover { border-color: rgba(255,255,255,0.15); background: #151515; }
+    .handoff-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .handoff-card-title { font-size: 16px; font-weight: 600; }
+    .handoff-card-client { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+    .handoff-card-meta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .handoff-card-meta span { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+    /* Status badges */
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge-draft { background: rgba(107,114,128,0.15); color: #9ca3af; }
+    .badge-sent { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .badge-viewed { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .badge-accepted { background: rgba(34,197,94,0.15); color: #4ade80; }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.4); }
+    .empty-state h3 { font-size: 18px; margin-bottom: 8px; color: rgba(255,255,255,0.6); }
+    .empty-state p { font-size: 14px; margin-bottom: 24px; }
+
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h2 { font-size: 18px; font-weight: 600; }
+    .modal-body { padding: 24px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end; gap: 12px; }
+
+    /* Form */
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.7); margin-bottom: 6px; }
+    .form-group input, .form-group textarea { width: 100%; background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 14px; color: #fff; font-size: 14px; font-family: inherit; }
+    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #ef4444; }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+    .form-hint { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+    /* Items builder */
+    .items-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+    .item-row { display: flex; gap: 8px; align-items: flex-start; }
+    .item-row select { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 14px; min-width: 120px; }
+    .item-row select:focus { outline: none; border-color: #ef4444; }
+    .item-row input { flex: 1; }
+    .item-row .remove-item { background: none; border: none; color: rgba(255,255,255,0.3); cursor: pointer; padding: 10px 4px; font-size: 18px; }
+    .item-row .remove-item:hover { color: #ef4444; }
+
+    /* Link display */
+    .link-box { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+    .link-box input { flex: 1; background: none; border: none; color: #60a5fa; font-size: 13px; font-family: monospace; }
+    .link-box input:focus { outline: none; }
+    .link-box .btn { flex-shrink: 0; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 20px; font-size: 14px; z-index: 200; opacity: 0; transform: translateY(10px); transition: all 0.3s; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { border-color: rgba(34,197,94,0.3); color: #4ade80; }
+    .toast.error { border-color: rgba(239,68,68,0.3); color: #f87171; }
+
+    /* Actions row */
+    .actions-row { display: flex; gap: 8px; margin-top: 12px; }
+
+    /* Loading */
+    .loading { text-align: center; padding: 40px; color: rgba(255,255,255,0.4); }
+
+    @media (max-width: 600px) {
+      .container { padding: 16px; }
+      .header { flex-direction: column; gap: 16px; align-items: flex-start; }
+      .item-row { flex-wrap: wrap; }
+      .item-row select { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div>
+      <a href="/build-queue.html" class="back-link">← Back to Build Queue</a>
+      <h1>Build <span>Handoffs</span></h1>
+    </div>
+    <button class="btn btn-primary" onclick="openCreateModal()">+ New Handoff</button>
+  </div>
+
+  <div id="handoff-list" class="handoff-list">
+    <div class="loading">Loading handoffs...</div>
+  </div>
+</div>
+
+<!-- Create/Edit Modal -->
+<div class="modal-overlay" id="create-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">New Handoff</h2>
+      <button class="btn-ghost" onclick="closeCreateModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-id" value="">
+
+      <div class="form-group">
+        <label>Client Name *</label>
+        <input type="text" id="client-name" placeholder="e.g. John Smith">
+      </div>
+
+      <div class="form-group">
+        <label>Client Email</label>
+        <input type="email" id="client-email" placeholder="e.g. john@company.com">
+        <div class="form-hint">Optional — for your records</div>
+      </div>
+
+      <div class="form-group">
+        <label>Project Name *</label>
+        <input type="text" id="project-name" placeholder="e.g. Company Website Redesign">
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="description" placeholder="Brief summary of what was built..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Deliverables</label>
+        <div class="form-hint" style="margin-bottom: 8px;">Add links, credentials, or notes for the client</div>
+        <div id="items-list" class="items-list"></div>
+        <button class="btn btn-secondary btn-sm" onclick="addItem()">+ Add Item</button>
+      </div>
+
+      <div class="form-group">
+        <label>Notes for Client</label>
+        <textarea id="notes" placeholder="Any instructions or next steps..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeCreateModal()">Cancel</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveHandoff()">Create Handoff</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Modal (with share link) -->
+<div class="modal-overlay" id="view-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="view-title">Handoff Details</h2>
+      <button class="btn-ghost" onclick="closeViewModal()">✕</button>
+    </div>
+    <div class="modal-body" id="view-body"></div>
+    <div class="modal-footer" id="view-footer"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api/handoffs';
+let handoffs = [];
+
+// ── Load handoffs ──
+async function loadHandoffs() {
+  try {
+    const res = await fetch(API);
+    const data = await res.json();
+    if (data.success) {
+      handoffs = data.handoffs;
+      renderList();
+    }
+  } catch (err) {
+    document.getElementById('handoff-list').innerHTML = '<div class="empty-state"><h3>Could not load handoffs</h3><p>' + err.message + '</p></div>';
+  }
+}
+
+function renderList() {
+  const el = document.getElementById('handoff-list');
+
+  if (handoffs.length === 0) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <h3>No handoffs yet</h3>
+        <p>Create your first handoff to send builds to clients</p>
+        <button class="btn btn-primary" onclick="openCreateModal()">+ New Handoff</button>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = handoffs.map(h => `
+    <div class="handoff-card" onclick="viewHandoff('${h.id}')">
+      <div class="handoff-card-header">
+        <div class="handoff-card-title">${esc(h.project_name)}</div>
+        <span class="badge badge-${h.status}">${h.status}</span>
+      </div>
+      <div class="handoff-card-client">→ ${esc(h.client_name)}${h.client_email ? ' (' + esc(h.client_email) + ')' : ''}</div>
+      <div class="handoff-card-meta">
+        <span>${(h.items || []).length} deliverable${(h.items || []).length !== 1 ? 's' : ''}</span>
+        <span>·</span>
+        <span>${formatDate(h.created_at)}</span>
+        ${h.accepted_at ? '<span>· Accepted ' + formatDate(h.accepted_at) + '</span>' : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── Create / Edit ──
+function openCreateModal(handoff) {
+  document.getElementById('edit-id').value = handoff ? handoff.id : '';
+  document.getElementById('modal-title').textContent = handoff ? 'Edit Handoff' : 'New Handoff';
+  document.getElementById('save-btn').textContent = handoff ? 'Save Changes' : 'Create Handoff';
+
+  document.getElementById('client-name').value = handoff ? handoff.client_name : '';
+  document.getElementById('client-email').value = handoff ? (handoff.client_email || '') : '';
+  document.getElementById('project-name').value = handoff ? handoff.project_name : '';
+  document.getElementById('description').value = handoff ? (handoff.description || '') : '';
+  document.getElementById('notes').value = handoff ? (handoff.notes || '') : '';
+
+  // Reset items
+  const itemsList = document.getElementById('items-list');
+  itemsList.innerHTML = '';
+
+  if (handoff && handoff.items && handoff.items.length > 0) {
+    handoff.items.forEach(item => addItem(item));
+  } else {
+    addItem(); // Start with one empty row
+  }
+
+  document.getElementById('create-modal').classList.add('active');
+}
+
+function closeCreateModal() {
+  document.getElementById('create-modal').classList.remove('active');
+}
+
+function addItem(data) {
+  const list = document.getElementById('items-list');
+  const row = document.createElement('div');
+  row.className = 'item-row';
+
+  const type = (data && data.type) || 'link';
+  const label = (data && data.label) || '';
+  const value = (data && data.value) || '';
+
+  row.innerHTML = `
+    <select class="item-type">
+      <option value="link" ${type === 'link' ? 'selected' : ''}>🔗 Link</option>
+      <option value="credential" ${type === 'credential' ? 'selected' : ''}>🔑 Login</option>
+      <option value="note" ${type === 'note' ? 'selected' : ''}>📝 Note</option>
+      <option value="file" ${type === 'file' ? 'selected' : ''}>📁 File</option>
+    </select>
+    <input type="text" class="item-label" placeholder="Label (e.g. Website URL)" value="${esc(label)}">
+    <input type="text" class="item-value" placeholder="Value (e.g. https://...)" value="${esc(value)}">
+    <button class="remove-item" onclick="this.parentElement.remove()">×</button>
+  `;
+  list.appendChild(row);
+}
+
+function getItems() {
+  const rows = document.querySelectorAll('.item-row');
+  const items = [];
+  rows.forEach(row => {
+    const type = row.querySelector('.item-type').value;
+    const label = row.querySelector('.item-label').value.trim();
+    const value = row.querySelector('.item-value').value.trim();
+    if (label || value) {
+      items.push({ type, label, value });
+    }
+  });
+  return items;
+}
+
+async function saveHandoff() {
+  const clientName = document.getElementById('client-name').value.trim();
+  const projectName = document.getElementById('project-name').value.trim();
+
+  if (!clientName || !projectName) {
+    showToast('Client name and project name are required', 'error');
+    return;
+  }
+
+  const body = {
+    client_name: clientName,
+    client_email: document.getElementById('client-email').value.trim() || null,
+    project_name: projectName,
+    description: document.getElementById('description').value.trim() || null,
+    items: getItems(),
+    notes: document.getElementById('notes').value.trim() || null,
+  };
+
+  const editId = document.getElementById('edit-id').value;
+
+  try {
+    const res = await fetch(editId ? `${API}/${editId}` : API, {
+      method: editId ? 'PATCH' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      closeCreateModal();
+      showToast(editId ? 'Handoff updated' : 'Handoff created!', 'success');
+      loadHandoffs();
+
+      // If new, show it immediately so they can get the link
+      if (!editId && data.handoff) {
+        setTimeout(() => viewHandoff(data.handoff.id), 300);
+      }
+    } else {
+      showToast(data.error || 'Something went wrong', 'error');
+    }
+  } catch (err) {
+    showToast('Failed to save: ' + err.message, 'error');
+  }
+}
+
+// ── View handoff ──
+function viewHandoff(id) {
+  const h = handoffs.find(x => x.id === id);
+  if (!h) return;
+
+  const shareUrl = window.location.origin + '/handoff?token=' + h.access_token;
+
+  let itemsHtml = '';
+  if (h.items && h.items.length > 0) {
+    itemsHtml = '<div style="margin-top:16px"><strong style="font-size:13px;color:rgba(255,255,255,0.6)">DELIVERABLES</strong>' +
+      h.items.map(item => {
+        const icon = { link: '🔗', credential: '🔑', note: '📝', file: '📁' }[item.type] || '📋';
+        return `<div style="background:#0a0a0a;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 14px;margin-top:8px;display:flex;gap:10px;align-items:center">
+          <span>${icon}</span>
+          <div><div style="font-size:13px;font-weight:500">${esc(item.label || item.type)}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.4)">${esc(item.value)}</div></div>
+        </div>`;
+      }).join('') + '</div>';
+  }
+
+  document.getElementById('view-title').textContent = h.project_name;
+  document.getElementById('view-body').innerHTML = `
+    <div style="margin-bottom:12px">
+      <span class="badge badge-${h.status}" style="margin-right:8px">${h.status}</span>
+      <span style="font-size:14px;color:rgba(255,255,255,0.5)">for ${esc(h.client_name)}</span>
+    </div>
+    ${h.description ? '<p style="font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:12px">' + esc(h.description) + '</p>' : ''}
+    ${itemsHtml}
+    ${h.notes ? '<div style="margin-top:16px"><strong style="font-size:13px;color:rgba(255,255,255,0.6)">NOTES</strong><p style="font-size:14px;color:rgba(255,255,255,0.7);margin-top:6px">' + esc(h.notes) + '</p></div>' : ''}
+    <div style="margin-top:20px">
+      <strong style="font-size:13px;color:rgba(255,255,255,0.6)">CLIENT LINK</strong>
+      <div class="link-box">
+        <input type="text" value="${shareUrl}" id="share-link" readonly>
+        <button class="btn btn-sm btn-secondary" onclick="copyLink()">Copy</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('view-footer').innerHTML = `
+    <button class="btn btn-danger btn-sm" onclick="deleteHandoff('${h.id}')">Delete</button>
+    <button class="btn btn-secondary btn-sm" onclick="closeViewModal(); openCreateModal(handoffs.find(x=>x.id==='${h.id}'))">Edit</button>
+    ${h.status === 'draft' ? `<button class="btn btn-primary btn-sm" onclick="markSent('${h.id}')">Mark as Sent</button>` : ''}
+  `;
+
+  document.getElementById('view-modal').classList.add('active');
+}
+
+function closeViewModal() {
+  document.getElementById('view-modal').classList.remove('active');
+}
+
+function copyLink() {
+  const input = document.getElementById('share-link');
+  input.select();
+  navigator.clipboard.writeText(input.value).then(() => {
+    showToast('Link copied!', 'success');
+  });
+}
+
+async function markSent(id) {
+  try {
+    const res = await fetch(`${API}/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'sent' }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('Marked as sent', 'success');
+      closeViewModal();
+      loadHandoffs();
+    }
+  } catch (err) {
+    showToast('Failed: ' + err.message, 'error');
+  }
+}
+
+async function deleteHandoff(id) {
+  if (!confirm('Delete this handoff?')) return;
+  try {
+    const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.success) {
+      showToast('Handoff deleted', 'success');
+      closeViewModal();
+      loadHandoffs();
+    }
+  } catch (err) {
+    showToast('Failed: ' + err.message, 'error');
+  }
+}
+
+// ── Helpers ──
+function esc(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// Init
+loadHandoffs();
+</script>
+</body>
+</html>

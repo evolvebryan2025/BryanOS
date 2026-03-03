@@ -439,6 +439,178 @@ app.post('/api/regenerate-referral-message', async (req, res) => {
   }
 });
 
+// ============================================================
+// HANDOFFS — Build delivery system for clients
+// ============================================================
+
+const crypto = require('crypto');
+
+// Supabase (optional — falls back to in-memory for local dev)
+let supabaseAdmin = null;
+try {
+  if (process.env.SUPABASE_URL) {
+    supabaseAdmin = require('./services/supabase').supabaseAdmin;
+  }
+} catch (e) {
+  console.log('Supabase not configured — handoffs will use in-memory store');
+}
+
+// In-memory fallback store for local development
+const memStore = [];
+
+// ── Handoff data layer (Supabase or in-memory) ──
+const HandoffDB = {
+  async list() {
+    if (supabaseAdmin) {
+      const { data, error } = await supabaseAdmin.from('handoffs').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    }
+    return [...memStore].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  },
+  async create(handoff) {
+    if (supabaseAdmin) {
+      const { data, error } = await supabaseAdmin.from('handoffs').insert(handoff).select().single();
+      if (error) throw error;
+      return data;
+    }
+    const record = { id: crypto.randomUUID(), ...handoff, created_at: new Date().toISOString(), accepted_at: null };
+    memStore.push(record);
+    return record;
+  },
+  async update(id, updates) {
+    if (supabaseAdmin) {
+      const { data, error } = await supabaseAdmin.from('handoffs').update(updates).eq('id', id).select().single();
+      if (error) throw error;
+      return data;
+    }
+    const idx = memStore.findIndex(h => h.id === id);
+    if (idx === -1) throw new Error('Not found');
+    Object.assign(memStore[idx], updates);
+    return memStore[idx];
+  },
+  async delete(id) {
+    if (supabaseAdmin) {
+      const { error } = await supabaseAdmin.from('handoffs').delete().eq('id', id);
+      if (error) throw error;
+      return;
+    }
+    const idx = memStore.findIndex(h => h.id === id);
+    if (idx !== -1) memStore.splice(idx, 1);
+  },
+  async findByToken(token) {
+    if (supabaseAdmin) {
+      const { data, error } = await supabaseAdmin.from('handoffs').select('*').eq('access_token', token).single();
+      if (error || !data) return null;
+      return data;
+    }
+    return memStore.find(h => h.access_token === token) || null;
+  },
+};
+
+// List all handoffs (admin)
+app.get('/api/handoffs', async (req, res) => {
+  try {
+    const handoffs = await HandoffDB.list();
+    res.json({ success: true, handoffs });
+  } catch (error) {
+    console.error('Error getting handoffs:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Create a handoff (admin)
+app.post('/api/handoffs', async (req, res) => {
+  try {
+    const { client_name, client_email, project_name, description, items, notes } = req.body;
+
+    if (!client_name || !project_name) {
+      return res.status(400).json({ error: 'Client name and project name are required' });
+    }
+
+    const handoff = await HandoffDB.create({
+      client_name,
+      client_email: client_email || null,
+      project_name,
+      description: description || null,
+      items: items || [],
+      notes: notes || null,
+      access_token: crypto.randomBytes(16).toString('hex'),
+      status: 'draft',
+    });
+
+    res.json({ success: true, handoff });
+  } catch (error) {
+    console.error('Error creating handoff:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update a handoff (admin)
+app.patch('/api/handoffs/:id', async (req, res) => {
+  try {
+    const updates = {};
+    const allowed = ['client_name', 'client_email', 'project_name', 'description', 'items', 'notes', 'status'];
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) updates[key] = req.body[key];
+    }
+
+    const handoff = await HandoffDB.update(req.params.id, updates);
+    res.json({ success: true, handoff });
+  } catch (error) {
+    console.error('Error updating handoff:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete a handoff (admin)
+app.delete('/api/handoffs/:id', async (req, res) => {
+  try {
+    await HandoffDB.delete(req.params.id);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting handoff:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PUBLIC: Client views their handoff via token
+app.get('/api/handoff/:token', async (req, res) => {
+  try {
+    const handoff = await HandoffDB.findByToken(req.params.token);
+    if (!handoff) return res.status(404).json({ error: 'Handoff not found' });
+
+    // Auto-mark as "viewed" when client opens it
+    if (handoff.status === 'sent') {
+      await HandoffDB.update(handoff.id, { status: 'viewed' });
+      handoff.status = 'viewed';
+    }
+
+    res.json({ success: true, handoff });
+  } catch (error) {
+    console.error('Error getting handoff:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PUBLIC: Client accepts the handoff
+app.post('/api/handoff/:token/accept', async (req, res) => {
+  try {
+    const handoff = await HandoffDB.findByToken(req.params.token);
+    if (!handoff) return res.status(404).json({ error: 'Handoff not found' });
+
+    if (handoff.status === 'accepted') {
+      return res.json({ success: true, message: 'Already accepted' });
+    }
+
+    await HandoffDB.update(handoff.id, { status: 'accepted', accepted_at: new Date().toISOString() });
+    res.json({ success: true, message: 'Handoff accepted' });
+  } catch (error) {
+    console.error('Error accepting handoff:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Root route - serve the dashboard
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'build-queue.html'));
@@ -452,6 +624,16 @@ app.get('/team-hub', (req, res) => {
 // Referral Messages
 app.get('/referral-messages', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'referral-messages.html'));
+});
+
+// Handoffs admin page
+app.get('/handoffs', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'handoffs.html'));
+});
+
+// Client handoff page (public)
+app.get('/handoff', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'handoff.html'));
 });
 
 // 404 handler

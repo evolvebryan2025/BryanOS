@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Build is Ready</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    /* Top brand bar */
+    .brand-bar {
+      background: #0a0a0a;
+      padding: 12px 20px;
+      text-align: center;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      font-weight: 500;
+    }
+    .brand-bar span { color: #ef4444; font-weight: 700; }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+    }
+
+    /* Main card */
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 30px rgba(0,0,0,0.04);
+      overflow: hidden;
+    }
+
+    /* Hero section */
+    .hero {
+      background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+      padding: 40px 32px;
+      color: #fff;
+      text-align: center;
+    }
+    .hero-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(239,68,68,0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 28px;
+    }
+    .hero h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .hero p {
+      font-size: 15px;
+      color: rgba(255,255,255,0.6);
+    }
+    .hero .client-name {
+      color: #ef4444;
+      font-weight: 600;
+    }
+
+    /* Content sections */
+    .content { padding: 32px; }
+
+    .section {
+      margin-bottom: 28px;
+    }
+    .section:last-child { margin-bottom: 0; }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #999;
+      margin-bottom: 12px;
+    }
+
+    /* Description */
+    .description {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #444;
+    }
+
+    /* Deliverable items */
+    .item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 14px 16px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      transition: background 0.15s;
+    }
+    .item:hover { background: #f0f1f3; }
+    .item-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .item-icon.link { background: #eff6ff; }
+    .item-icon.credential { background: #fef3c7; }
+    .item-icon.note { background: #f0fdf4; }
+    .item-icon.file { background: #faf5ff; }
+    .item-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 2px;
+    }
+    .item-value {
+      font-size: 13px;
+      color: #666;
+      word-break: break-all;
+    }
+    .item-value a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+    .item-value a:hover { text-decoration: underline; }
+
+    /* Copy button for credentials */
+    .copy-btn {
+      background: none;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: #666;
+      cursor: pointer;
+      margin-left: 8px;
+      transition: all 0.15s;
+    }
+    .copy-btn:hover { background: #f0f0f0; border-color: #bbb; }
+
+    /* Notes */
+    .notes-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 16px 18px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #92400e;
+    }
+
+    /* Accept button */
+    .accept-section {
+      text-align: center;
+      padding: 32px;
+      border-top: 1px solid #f0f0f0;
+    }
+    .accept-btn {
+      background: #16a34a;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 48px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      max-width: 360px;
+    }
+    .accept-btn:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22,163,74,0.3); }
+    .accept-btn:active { transform: translateY(0); }
+    .accept-btn:disabled { background: #d1d5db; cursor: default; transform: none; box-shadow: none; }
+    .accept-hint {
+      font-size: 12px;
+      color: #999;
+      margin-top: 10px;
+    }
+
+    /* Accepted state */
+    .accepted-banner {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin: 0 32px 24px;
+    }
+    .accepted-banner .check { font-size: 32px; margin-bottom: 8px; }
+    .accepted-banner h3 { color: #16a34a; font-size: 16px; margin-bottom: 4px; }
+    .accepted-banner p { color: #666; font-size: 13px; }
+
+    /* Loading / Error states */
+    .state-screen {
+      text-align: center;
+      padding: 80px 20px;
+    }
+    .state-screen h2 { font-size: 20px; margin-bottom: 8px; }
+    .state-screen p { color: #666; font-size: 14px; }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #f0f0f0;
+      border-top-color: #ef4444;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container { padding: 20px 12px 40px; }
+      .hero { padding: 30px 20px; }
+      .content { padding: 24px 20px; }
+      .hero h1 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="brand-bar">Powered by <span>Sumait AI</span></div>
+
+<div class="container">
+  <!-- Loading State -->
+  <div id="loading" class="state-screen">
+    <div class="spinner"></div>
+    <h2>Loading your delivery...</h2>
+  </div>
+
+  <!-- Error State -->
+  <div id="error" class="state-screen" style="display:none">
+    <h2>Handoff Not Found</h2>
+    <p>This link may be expired or invalid. Please contact the sender.</p>
+  </div>
+
+  <!-- Main Content -->
+  <div id="main" style="display:none">
+    <div class="card">
+      <div class="hero">
+        <div class="hero-icon">🚀</div>
+        <h1 id="project-name"></h1>
+        <p>Hey <span class="client-name" id="client-name"></span>, your build is ready!</p>
+      </div>
+
+      <div id="accepted-banner" style="display:none">
+        <div style="height: 16px"></div>
+        <div class="accepted-banner">
+          <div class="check">✅</div>
+          <h3>Handoff Accepted</h3>
+          <p id="accepted-date"></p>
+        </div>
+      </div>
+
+      <div class="content" id="content"></div>
+
+      <div id="accept-section" class="accept-section">
+        <button class="accept-btn" id="accept-btn" onclick="acceptHandoff()">
+          ✓ I Accept This Handoff
+        </button>
+        <p class="accept-hint">Click to confirm you've received everything</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const token = new URLSearchParams(window.location.search).get('token');
+let handoffData = null;
+
+async function loadHandoff() {
+  if (!token) {
+    showError();
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/handoff/' + encodeURIComponent(token));
+    const data = await res.json();
+
+    if (!data.success || !data.handoff) {
+      showError();
+      return;
+    }
+
+    handoffData = data.handoff;
+    renderHandoff();
+  } catch (err) {
+    showError();
+  }
+}
+
+function showError() {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('error').style.display = 'block';
+}
+
+function renderHandoff() {
+  const h = handoffData;
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('main').style.display = 'block';
+
+  document.getElementById('project-name').textContent = h.project_name;
+  document.getElementById('client-name').textContent = h.client_name;
+  document.title = h.project_name + ' — Handoff';
+
+  let html = '';
+
+  // Description
+  if (h.description) {
+    html += `<div class="section">
+      <div class="section-title">About This Build</div>
+      <div class="description">${escHtml(h.description)}</div>
+    </div>`;
+  }
+
+  // Deliverables
+  if (h.items && h.items.length > 0) {
+    const icons = { link: '🔗', credential: '🔑', note: '📝', file: '📁' };
+
+    html += '<div class="section"><div class="section-title">What\'s Included</div>';
+    h.items.forEach((item, i) => {
+      const icon = icons[item.type] || '📋';
+      let valueHtml = escHtml(item.value);
+
+      // Make links clickable
+      if (item.type === 'link' && item.value && (item.value.startsWith('http://') || item.value.startsWith('https://'))) {
+        valueHtml = `<a href="${escAttr(item.value)}" target="_blank" rel="noopener">${escHtml(item.value)}</a>`;
+      }
+
+      // Add copy button for credentials
+      if (item.type === 'credential' && item.value) {
+        valueHtml += `<button class="copy-btn" onclick="copyText('${escAttr(item.value)}', this)">Copy</button>`;
+      }
+
+      html += `<div class="item">
+        <div class="item-icon ${item.type}">${icon}</div>
+        <div>
+          <div class="item-label">${escHtml(item.label || item.type)}</div>
+          <div class="item-value">${valueHtml}</div>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  // Notes
+  if (h.notes) {
+    html += `<div class="section">
+      <div class="section-title">Important Notes</div>
+      <div class="notes-box">${escHtml(h.notes)}</div>
+    </div>`;
+  }
+
+  document.getElementById('content').innerHTML = html;
+
+  // Handle accepted state
+  if (h.status === 'accepted') {
+    document.getElementById('accepted-banner').style.display = 'block';
+    document.getElementById('accepted-date').textContent = 'Accepted on ' + formatDate(h.accepted_at);
+    document.getElementById('accept-section').style.display = 'none';
+  }
+}
+
+async function acceptHandoff() {
+  const btn = document.getElementById('accept-btn');
+  btn.disabled = true;
+  btn.textContent = 'Accepting...';
+
+  try {
+    const res = await fetch('/api/handoff/' + encodeURIComponent(token) + '/accept', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      btn.textContent = '✓ Accepted!';
+      btn.style.background = '#16a34a';
+
+      // Refresh to show accepted state
+      setTimeout(() => loadHandoff(), 500);
+    } else {
+      btn.disabled = false;
+      btn.textContent = '✓ I Accept This Handoff';
+      alert('Something went wrong. Please try again.');
+    }
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = '✓ I Accept This Handoff';
+    alert('Connection error. Please try again.');
+  }
+}
+
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = orig, 1500);
+  });
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function escAttr(str) {
+  if (!str) return '';
+  return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+// Go!
+loadHandoff();
+</script>
+</body>
+</html>
