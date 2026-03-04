@@ -1,42 +1,25 @@
+# ============================================================
+# BryanOS — Netlify Deployment Config
+# Next.js frontend + Express API as Netlify Function
+# ============================================================
+
 [build]
-  publish = "public"
-  functions = "netlify/functions"
-  command = "npm install"
+  base = "frontend"
+  command = "npm install && npm run build"
+  publish = ".next"
 
 [functions]
+  directory = "../netlify/functions"
   node_bundler = "esbuild"
-  included_files = ["services/**"]
+  included_files = ["../services/**", "../server.js", "../routes/**", "../middleware/**"]
 
-# API routes → Netlify Function
+# Next.js on Netlify
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# API routes → Netlify Function (Express backend)
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/server/api/:splat"
   status = 200
   force = true
-
-# Clean URL routes for pages
-[[redirects]]
-  from = "/team-hub"
-  to = "/team-hub.html"
-  status = 200
-
-[[redirects]]
-  from = "/referral-messages"
-  to = "/referral-messages.html"
-  status = 200
-
-[[redirects]]
-  from = "/handoffs"
-  to = "/handoffs.html"
-  status = 200
-
-[[redirects]]
-  from = "/handoff"
-  to = "/handoff.html"
-  status = 200
-
-# Root serves the dashboard
-[[redirects]]
-  from = "/"
-  to = "/build-queue.html"
-  status = 200
