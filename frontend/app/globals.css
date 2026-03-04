@@ -1,0 +1,285 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   Sumait AI / BryanOS Design System — Tailwind v4 Theme
+   ============================================================ */
+
+@theme inline {
+  /* Base shadcn mappings */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Charts */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Radius */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  /* Fonts */
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-syne);
+  --font-mono: var(--font-jetbrains-mono);
+
+  /* Sumait AI custom colors */
+  --color-brand-red: #ef4444;
+  --color-brand-red-dark: #dc2626;
+  --color-brand-red-light: #f87171;
+  --color-brand-black: #0a0a0a;
+  --color-brand-dark: #111111;
+  --color-brand-surface: #1a1a1a;
+  --color-brand-surface-hover: #222222;
+  --color-brand-border: rgba(255, 255, 255, 0.08);
+  --color-brand-border-hover: rgba(255, 255, 255, 0.15);
+  --color-brand-text: rgba(255, 255, 255, 0.95);
+  --color-brand-text-muted: rgba(255, 255, 255, 0.55);
+  --color-brand-text-dim: rgba(255, 255, 255, 0.35);
+}
+
+/* ============================================================
+   Sumait AI Dark Theme (Always Dark)
+   ============================================================ */
+
+:root {
+  --radius: 0.625rem;
+
+  /* Core */
+  --background: #0a0a0a;
+  --foreground: rgba(255, 255, 255, 0.95);
+
+  /* Cards — glassmorphic dark surfaces */
+  --card: #111111;
+  --card-foreground: rgba(255, 255, 255, 0.95);
+
+  /* Popover */
+  --popover: #151515;
+  --popover-foreground: rgba(255, 255, 255, 0.95);
+
+  /* Primary — Sumait AI Red */
+  --primary: #ef4444;
+  --primary-foreground: #ffffff;
+
+  /* Secondary — subtle dark surface */
+  --secondary: #1a1a1a;
+  --secondary-foreground: rgba(255, 255, 255, 0.9);
+
+  /* Muted */
+  --muted: #1a1a1a;
+  --muted-foreground: rgba(255, 255, 255, 0.55);
+
+  /* Accent */
+  --accent: rgba(239, 68, 68, 0.1);
+  --accent-foreground: #ef4444;
+
+  /* Destructive */
+  --destructive: #ef4444;
+
+  /* Borders — subtle white borders */
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #ef4444;
+
+  /* Charts — vibrant palette */
+  --chart-1: #ef4444;
+  --chart-2: #3b82f6;
+  --chart-3: #22c55e;
+  --chart-4: #f59e0b;
+  --chart-5: #a855f7;
+
+  /* Sidebar */
+  --sidebar: #0d0d0d;
+  --sidebar-foreground: rgba(255, 255, 255, 0.85);
+  --sidebar-primary: #ef4444;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(239, 68, 68, 0.08);
+  --sidebar-accent-foreground: #ef4444;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-ring: #ef4444;
+}
+
+/* .dark class uses same values — app is always dark */
+.dark {
+  --background: #0a0a0a;
+  --foreground: rgba(255, 255, 255, 0.95);
+  --card: #111111;
+  --card-foreground: rgba(255, 255, 255, 0.95);
+  --popover: #151515;
+  --popover-foreground: rgba(255, 255, 255, 0.95);
+  --primary: #ef4444;
+  --primary-foreground: #ffffff;
+  --secondary: #1a1a1a;
+  --secondary-foreground: rgba(255, 255, 255, 0.9);
+  --muted: #1a1a1a;
+  --muted-foreground: rgba(255, 255, 255, 0.55);
+  --accent: rgba(239, 68, 68, 0.1);
+  --accent-foreground: #ef4444;
+  --destructive: #ef4444;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #ef4444;
+  --chart-1: #ef4444;
+  --chart-2: #3b82f6;
+  --chart-3: #22c55e;
+  --chart-4: #f59e0b;
+  --chart-5: #a855f7;
+  --sidebar: #0d0d0d;
+  --sidebar-foreground: rgba(255, 255, 255, 0.85);
+  --sidebar-primary: #ef4444;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(239, 68, 68, 0.08);
+  --sidebar-accent-foreground: #ef4444;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-ring: #ef4444;
+}
+
+/* ============================================================
+   Base Styles
+   ============================================================ */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
+
+/* ============================================================
+   Glassmorphism Utilities
+   ============================================================ */
+
+.glass {
+  background: rgba(17, 17, 17, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-hover:hover {
+  background: rgba(26, 26, 26, 0.9);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.glass-red {
+  background: rgba(239, 68, 68, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+/* Red glow effects */
+.glow-red {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.15), 0 0 60px rgba(239, 68, 68, 0.05);
+}
+
+.glow-red-sm {
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.1);
+}
+
+.glow-red-hover:hover {
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.2), 0 0 80px rgba(239, 68, 68, 0.08);
+}
+
+/* Text gradient */
+.text-gradient-red {
+  background: linear-gradient(135deg, #ef4444, #f87171);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animated gradient border */
+.border-gradient {
+  position: relative;
+}
+.border-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), transparent 50%, rgba(239, 68, 68, 0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Status colors */
+.status-not-started { color: #6b7280; }
+.status-in-progress { color: #3b82f6; }
+.status-qa { color: #f59e0b; }
+.status-done { color: #22c55e; }
+.status-blocked { color: #ef4444; }
+
+/* Priority indicators */
+.priority-critical { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+.priority-high { background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); }
+.priority-medium { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+.priority-low { background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
+
+/* Smooth transitions */
+.transition-smooth {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}

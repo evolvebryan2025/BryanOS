@@ -7,6 +7,7 @@ const GoogleSheetsService = require('./services/googleSheets');
 const AIAgent = require('./services/aiAgent');
 const AssignmentRulesService = require('./services/assignmentRules');
 const NotificationService = require('./services/notifications');
+const apiRoutes = require('./routes/api');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,9 +29,13 @@ const aiAgent = new AIAgent();
 const assignmentRules = new AssignmentRulesService();
 const notifications = new NotificationService();
 
+// ============================================================
+// Supabase-powered API routes (v2 — auth + workspace required)
+// ============================================================
+app.use('/api/v2', apiRoutes);
+
 // Health check / diagnostic endpoint
 app.get('/api/health', (req, res) => {
-  const privateKey = process.env.GOOGLE_PRIVATE_KEY || '';
   res.json({
     status: 'ok',
     env: {
@@ -39,12 +44,11 @@ app.get('/api/health', (req, res) => {
       hasSheetId: !!process.env.GOOGLE_SHEET_ID,
       hasServiceEmail: !!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
       hasPrivateKey: !!process.env.GOOGLE_PRIVATE_KEY,
-      privateKeyLength: privateKey.length,
-      privateKeyStartsWith: privateKey.substring(0, 20),
-      privateKeyEndsWith: privateKey.substring(privateKey.length - 20),
       hasWebhook: !!process.env.N8N_WEBHOOK_URL,
+      hasSupabaseUrl: !!process.env.SUPABASE_URL,
+      hasSupabaseAnonKey: !!process.env.SUPABASE_ANON_KEY,
+      hasSupabaseServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
       nodeEnv: process.env.NODE_ENV,
-      vercel: !!process.env.VERCEL,
     },
   });
 });
