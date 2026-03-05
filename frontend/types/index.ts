@@ -146,3 +146,30 @@ export interface TaskFilters {
 
 // View modes
 export type ViewMode = "table" | "kanban";
+
+// Delegation Agent
+export interface TaskAssignment {
+  task: {
+    title: string;
+    priority: string;
+    system?: string;
+    timestamp?: string;
+    notes?: string;
+    description?: string;
+  };
+  assigneeId: string;
+  assigneeName: string;
+}
+
+export interface DelegationMessage {
+  assigneeId: string;
+  assigneeName: string;
+  taskCount: number;
+  message: string;
+}
+
+export interface DelegationResponse {
+  success: boolean;
+  delegations: DelegationMessage[];
+  provider: string;
+}

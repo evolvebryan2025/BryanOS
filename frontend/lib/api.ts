@@ -203,6 +203,20 @@ class ApiClient {
       body: JSON.stringify({ contacts, pitch, offer, senderName }),
     });
   }
+  // Delegation Messages
+  async generateDelegationMessages(
+    assignments: { task: Record<string, unknown>; assigneeId: string; assigneeName: string }[],
+    clientId: string,
+  ) {
+    return this.request<{
+      success: boolean;
+      delegations: { assigneeId: string; assigneeName: string; taskCount: number; message: string }[];
+      provider: string;
+    }>("/generate-delegation", {
+      method: "POST",
+      body: JSON.stringify({ assignments, clientId }),
+    });
+  }
 }
 
 export const api = new ApiClient();

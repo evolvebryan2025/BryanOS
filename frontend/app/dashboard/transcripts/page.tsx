@@ -20,14 +20,24 @@ import {
   ListTodo,
   Copy,
   Check,
+  Users,
+  Send,
+  UserCheck,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useConfigStore, useTaskStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/types";
 
+interface DelegationMsg {
+  assigneeId: string;
+  assigneeName: string;
+  taskCount: number;
+  message: string;
+}
+
 export default function TranscriptsPage() {
-  const { clients, fetchConfig } = useConfigStore();
+  const { clients, teamMembers, fetchConfig } = useConfigStore();
   const { createTask, fetchTasks } = useTaskStore();
 
   const [selectedClient, setSelectedClient] = useState("");
@@ -41,6 +51,12 @@ export default function TranscriptsPage() {
   const [copiedFormatted, setCopiedFormatted] = useState(false);
   const [tasksCreated, setTasksCreated] = useState(false);
 
+  // Delegation state
+  const [taskAssignments, setTaskAssignments] = useState<Record<number, string>>({});
+  const [delegationMessages, setDelegationMessages] = useState<DelegationMsg[]>([]);
+  const [isGeneratingDelegation, setIsGeneratingDelegation] = useState(false);
+  const [copiedDelegation, setCopiedDelegation] = useState<Record<string, boolean>>({});
+
   useEffect(() => {
     fetchConfig();
   }, [fetchConfig]);
@@ -52,6 +68,8 @@ export default function TranscriptsPage() {
     setFormattedOutput("");
     setParsedTasks([]);
     setTasksCreated(false);
+    setTaskAssignments({});
+    setDelegationMessages([]);
 
     try {
       const result = await api.processTranscript(transcript.trim(), selectedClient);
@@ -70,9 +88,11 @@ export default function TranscriptsPage() {
     setIsCreating(true);
     try {
       for (const task of parsedTasks) {
+        const assigneeId = taskAssignments[parsedTasks.indexOf(task)];
         await createTask({
           ...task,
           client_id: selectedClient,
+          ...(assigneeId ? { assigned_to: assigneeId } : {}),
         });
       }
       setTasksCreated(true);
@@ -90,6 +110,9 @@ export default function TranscriptsPage() {
     setFormattedOutput("");
     setParsedTasks([]);
     setTasksCreated(false);
+    setTaskAssignments({});
+    setDelegationMessages([]);
+    setCopiedDelegation({});
   }
 
   function handleCopyFormatted() {
@@ -98,7 +121,65 @@ export default function TranscriptsPage() {
     setTimeout(() => setCopiedFormatted(false), 2000);
   }
 
-  const clientName = clients.find((c) => c.id === selectedClient)?.name;
+  function handleAssignTask(taskIndex: number, memberId: string) {
+    setTaskAssignments((prev) => ({ ...prev, [taskIndex]: memberId }));
+    // Clear delegation messages when assignments change
+    setDelegationMessages([]);
+  }
+
+  function handleAutoAssignAll() {
+    const activeMembers = teamMembers.filter((m) => m.is_active);
+    if (activeMembers.length === 0) return;
+
+    const assignments: Record<number, string> = {};
+    parsedTasks.forEach((_, index) => {
+      assignments[index] = activeMembers[index % activeMembers.length].user_id;
+    });
+    setTaskAssignments(assignments);
+    setDelegationMessages([]);
+  }
+
+  async function handleGenerateDelegation() {
+    const assignedIndices = Object.keys(taskAssignments).map(Number);
+    if (assignedIndices.length === 0) return;
+
+    const assignments = assignedIndices.map((index) => {
+      const task = parsedTasks[index];
+      const member = teamMembers.find((m) => m.user_id === taskAssignments[index]);
+      return {
+        task: {
+          title: task.title || "",
+          priority: task.priority || "medium",
+          system: (task as Record<string, unknown>).system as string | undefined,
+          timestamp: task.meeting_timestamp,
+          notes: task.notes,
+          description: task.description,
+        },
+        assigneeId: taskAssignments[index],
+        assigneeName: member?.user?.full_name || "Unknown",
+      };
+    });
+
+    setIsGeneratingDelegation(true);
+    try {
+      const result = await api.generateDelegationMessages(assignments, selectedClient);
+      setDelegationMessages(result.delegations);
+    } catch (error) {
+      console.error("Failed to generate delegation messages:", error);
+    } finally {
+      setIsGeneratingDelegation(false);
+    }
+  }
+
+  function handleCopyDelegation(assigneeId: string, message: string) {
+    navigator.clipboard.writeText(message);
+    setCopiedDelegation((prev) => ({ ...prev, [assigneeId]: true }));
+    setTimeout(() => {
+      setCopiedDelegation((prev) => ({ ...prev, [assigneeId]: false }));
+    }, 2000);
+  }
+
+  const assignedCount = Object.keys(taskAssignments).length;
 
   return (
     <div className="space-y-6">
@@ -255,14 +336,27 @@ export default function TranscriptsPage() {
                 </Card>
               )}
 
-              {/* Parsed tasks */}
+              {/* Parsed tasks with assignee dropdowns */}
               {parsedTasks.length > 0 && (
                 <Card className="glass border-white/8">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                      <ListTodo className="h-3.5 w-3.5" />
-                      Extracted Tasks ({parsedTasks.length})
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                        <ListTodo className="h-3.5 w-3.5" />
+                        Extracted Tasks ({parsedTasks.length})
+                      </CardTitle>
+                      {teamMembers.length > 0 && !tasksCreated && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleAutoAssignAll}
+                          className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground"
+                        >
+                          <Users className="h-3 w-3" />
+                          Auto-Assign
+                        </Button>
+                      )}
+                    </div>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     {parsedTasks.map((task, i) => (
@@ -303,19 +397,60 @@ export default function TranscriptsPage() {
                               </Badge>
                             )}
                           </div>
+
+                          {/* Assignee dropdown */}
+                          {teamMembers.length > 0 && !tasksCreated && (
+                            <div className="mt-2">
+                              <Select
+                                value={taskAssignments[i] || ""}
+                                onValueChange={(value) => handleAssignTask(i, value)}
+                              >
+                                <SelectTrigger className="h-7 w-[180px] text-xs bg-white/5 border-white/10">
+                                  <SelectValue placeholder="Assign to..." />
+                                </SelectTrigger>
+                                <SelectContent className="bg-popover border-border">
+                                  {teamMembers
+                                    .filter((m) => m.is_active)
+                                    .map((member) => (
+                                      <SelectItem key={member.user_id} value={member.user_id}>
+                                        {member.user?.full_name || member.user_id}
+                                      </SelectItem>
+                                    ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
 
-                    {/* Create tasks button */}
-                    <div className="pt-3 flex gap-2">
-                      {tasksCreated ? (
-                        <div className="flex items-center gap-2 text-green-400 text-sm font-medium w-full justify-center py-2">
-                          <CheckCircle2 className="h-4 w-4" />
-                          {parsedTasks.length} task{parsedTasks.length !== 1 ? "s" : ""} created successfully!
-                        </div>
-                      ) : (
-                        <>
+                    {/* Delegation + Create buttons */}
+                    {!tasksCreated && (
+                      <div className="pt-3 space-y-2">
+                        {/* Generate Delegation Messages */}
+                        {teamMembers.length > 0 && (
+                          <Button
+                            onClick={handleGenerateDelegation}
+                            disabled={isGeneratingDelegation || assignedCount === 0}
+                            className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                          >
+                            {isGeneratingDelegation ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Generating Delegation Messages...
+                              </>
+                            ) : (
+                              <>
+                                <Send className="mr-2 h-4 w-4" />
+                                Generate Delegation Messages
+                                {assignedCount > 0 && ` (${assignedCount} assigned)`}
+                              </>
+                            )}
+                          </Button>
+                        )}
+
+                        {/* Create tasks */}
+                        <div className="flex gap-2">
                           <Button
                             onClick={handleCreateTasks}
                             disabled={isCreating}
@@ -340,9 +475,81 @@ export default function TranscriptsPage() {
                           >
                             Reset
                           </Button>
-                        </>
-                      )}
-                    </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Tasks created success */}
+                    {tasksCreated && (
+                      <div className="pt-3">
+                        <div className="flex items-center gap-2 text-green-400 text-sm font-medium w-full justify-center py-2">
+                          <CheckCircle2 className="h-4 w-4" />
+                          {parsedTasks.length} task{parsedTasks.length !== 1 ? "s" : ""} created successfully!
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Delegation Messages Output */}
+              {delegationMessages.length > 0 && (
+                <Card className="glass border-blue-500/20">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                      <UserCheck className="h-3.5 w-3.5 text-blue-400" />
+                      Delegation Messages ({delegationMessages.length} team member{delegationMessages.length !== 1 ? "s" : ""})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {delegationMessages.map((delegation) => (
+                      <div
+                        key={delegation.assigneeId || delegation.assigneeName}
+                        className="rounded-lg bg-white/3 p-3 space-y-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-semibold text-foreground">
+                              {delegation.assigneeName}
+                            </span>
+                            <Badge variant="outline" className="text-[10px] border-blue-500/20 text-blue-400">
+                              {delegation.taskCount} task{delegation.taskCount !== 1 ? "s" : ""}
+                            </Badge>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              handleCopyDelegation(
+                                delegation.assigneeId || delegation.assigneeName,
+                                delegation.message
+                              )
+                            }
+                            className={cn(
+                              "h-7 text-xs gap-1",
+                              copiedDelegation[delegation.assigneeId || delegation.assigneeName]
+                                ? "text-green-400"
+                                : "text-muted-foreground hover:text-foreground"
+                            )}
+                          >
+                            {copiedDelegation[delegation.assigneeId || delegation.assigneeName] ? (
+                              <>
+                                <Check className="h-3 w-3" />
+                                Copied
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="h-3 w-3" />
+                                Copy
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                        <pre className="text-xs text-foreground/90 whitespace-pre-wrap leading-relaxed font-mono bg-white/3 rounded-lg p-3 max-h-[250px] overflow-y-auto">
+                          {delegation.message}
+                        </pre>
+                      </div>
+                    ))}
                   </CardContent>
                 </Card>
               )}

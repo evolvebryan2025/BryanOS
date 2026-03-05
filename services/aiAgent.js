@@ -179,6 +179,88 @@ Return ONLY the JSON array, no other text.`;
     }
   }
 
+  buildDelegationPrompt(tasksByAssignee, clientName, senderName = 'Bryan') {
+    const assigneeBlocks = tasksByAssignee.map((group, i) => {
+      const taskList = group.tasks.map((t, j) => {
+        let taskStr = `  ${j + 1}. "${t.title}" [Priority: ${t.priority}]`;
+        if (t.system) taskStr += ` [System: ${t.system}]`;
+        if (t.timestamp) taskStr += ` [Timestamp: ${t.timestamp}]`;
+        if (t.notes) taskStr += `\n     Deliverables: ${t.notes}`;
+        return taskStr;
+      }).join('\n');
+
+      return `ASSIGNEE ${i + 1}: ${group.assigneeName}\nTasks:\n${taskList}`;
+    }).join('\n\n');
+
+    return `You are a delegation message writer for ${senderName}. Generate clear, actionable delegation messages for each team member below. These messages will be copy-pasted and sent directly via WhatsApp, Slack, or email.
+
+CLIENT CONTEXT: ${clientName}
+DATE: ${new Date().toLocaleDateString()}
+
+${assigneeBlocks}
+
+RULES:
+1. Write ONE message per assignee that covers ALL their assigned tasks
+2. Start with a brief, friendly greeting using their first name
+3. Reference the client name naturally (e.g., "From our ${clientName} meeting...")
+4. For each task, include:
+   - A clear, specific instruction of what needs to be done
+   - The priority level (use urgency language for critical/high, normal for medium/low)
+   - Any specific deliverables from the notes
+   - The timestamp reference if available
+5. Order tasks within the message by priority (critical first, then high, medium, low)
+6. End with a clear ask: confirm receipt, flag blockers, give ETA
+7. Keep the tone direct but respectful — like a team lead giving clear instructions, not a formal email
+8. Use line breaks and numbering for readability — these will be sent on messaging apps
+9. Do NOT use markdown formatting (no ** or # or [links]) — use plain text only
+10. Each message should be 100-300 words depending on task count
+11. If a task has deliverables/notes, incorporate those as specific checklist items
+
+OUTPUT FORMAT (follow EXACTLY — return ONLY this JSON array, no other text):
+[
+  {
+    "assigneeName": "Team Member Name",
+    "message": "The full message text here..."
+  }
+]
+
+Return ONLY the JSON array, no other text.`;
+  }
+
+  async generateDelegationMessages(tasksByAssignee, clientName, senderName = 'Bryan') {
+    const prompt = this.buildDelegationPrompt(tasksByAssignee, clientName, senderName);
+
+    try {
+      console.log('Generating delegation messages with Claude...');
+      const message = await this.claude.messages.create({
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: prompt }],
+      });
+
+      const text = message.content[0].text;
+      const delegations = JSON.parse(text);
+      return { delegations, provider: 'claude' };
+    } catch (claudeError) {
+      console.log('Claude failed for delegation, trying OpenAI:', claudeError.message);
+
+      try {
+        const completion = await this.openai.chat.completions.create({
+          model: 'gpt-4-turbo',
+          max_tokens: 4000,
+          messages: [{ role: 'user', content: prompt }],
+        });
+
+        const text = completion.choices[0].message.content;
+        const delegations = JSON.parse(text);
+        return { delegations, provider: 'openai' };
+      } catch (openaiError) {
+        console.error('Both AI providers failed for delegation:', openaiError.message);
+        throw new Error('AI processing failed: Both Claude and OpenAI APIs are unavailable');
+      }
+    }
+  }
+
   parseTaskDocument(formatted) {
     const tasks = [];
 

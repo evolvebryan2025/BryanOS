@@ -332,4 +332,65 @@ router.post('/generate-referral-messages', async (req, res) => {
   }
 });
 
+// ============================================================
+// DELEGATION MESSAGES
+// ============================================================
+
+router.post('/generate-delegation', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const { assignments, clientId } = req.body;
+
+    if (!assignments || !Array.isArray(assignments) || assignments.length === 0) {
+      return res.status(400).json({ error: 'Missing assignments array' });
+    }
+    if (!clientId) {
+      return res.status(400).json({ error: 'Missing clientId' });
+    }
+
+    // Get client name for the prompt
+    const clients = await db.getClients();
+    const client = clients.find(c => c.id === clientId);
+    const clientName = client ? client.name : 'Unknown Client';
+
+    // Group tasks by assignee
+    const grouped = {};
+    for (const a of assignments) {
+      if (!grouped[a.assigneeName]) {
+        grouped[a.assigneeName] = { assigneeName: a.assigneeName, assigneeId: a.assigneeId, tasks: [] };
+      }
+      grouped[a.assigneeName].tasks.push(a.task);
+    }
+    const tasksByAssignee = Object.values(grouped);
+
+    // Generate with AI
+    const result = await aiAgent.generateDelegationMessages(tasksByAssignee, clientName);
+
+    // Merge assigneeId back into the result
+    const delegations = result.delegations.map(d => {
+      const match = tasksByAssignee.find(g => g.assigneeName === d.assigneeName);
+      return {
+        assigneeId: match ? match.assigneeId : null,
+        assigneeName: d.assigneeName,
+        taskCount: match ? match.tasks.length : 0,
+        message: d.message,
+      };
+    });
+
+    // Track usage (best-effort — field may not exist)
+    try {
+      const { supabaseAdmin } = require('../services/supabase');
+      await supabaseAdmin.rpc('increment_usage', {
+        ws_id: req.workspaceId,
+        field: 'ai_calls',
+      });
+    } catch { /* usage tracking is best-effort */ }
+
+    res.json({ success: true, delegations, provider: result.provider });
+  } catch (error) {
+    console.error('Error generating delegation messages:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
