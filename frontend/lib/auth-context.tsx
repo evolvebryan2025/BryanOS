@@ -41,6 +41,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const supabase = getSupabase();
 
       if (s?.access_token) {
+        // Ensure user profile exists (may be missing if migration ran after signup)
+        const { data: profile } = await supabase
+          .from("users")
+          .select("id")
+          .eq("id", s.user.id)
+          .single();
+
+        if (!profile) {
+          const { error: profileErr } = await supabase.from("users").upsert({
+            id: s.user.id,
+            email: s.user.email!,
+            full_name:
+              s.user.user_metadata?.full_name ||
+              s.user.user_metadata?.name ||
+              s.user.email?.split("@")[0] ||
+              "User",
+            avatar_url: s.user.user_metadata?.avatar_url || null,
+          });
+          if (profileErr) console.error("Failed to create user profile:", profileErr.message);
+        }
+
+        // Look for existing workspace membership
         const { data: memberships } = await supabase
           .from("workspace_members")
           .select("workspace_id")
@@ -48,7 +70,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .eq("is_active", true)
           .limit(1);
 
-        const wsId = memberships?.[0]?.workspace_id || null;
+        let wsId = memberships?.[0]?.workspace_id || null;
+
+        // Auto-create a default workspace for new users
+        if (!wsId) {
+          const userName =
+            s.user.user_metadata?.full_name ||
+            s.user.email?.split("@")[0] ||
+            "User";
+          const slug = `ws-${Date.now()}`;
+
+          const { data: newWs, error: wsErr } = await supabase
+            .from("workspaces")
+            .insert({ name: `${userName}'s Workspace`, slug })
+            .select("id")
+            .single();
+
+          if (wsErr) {
+            console.error("Failed to create workspace:", wsErr.message);
+          } else if (newWs) {
+            wsId = newWs.id;
+          }
+        }
+
         setWorkspaceId(wsId);
 
         if (wsId) {
